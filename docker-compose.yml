@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  neutron-snapshot:
+    image: neutron-mainnet-snapshot
+    container_name: neutron-mainnet-snapshot
+    volumes:
+      - ./snapshot/:/opt/neutron/snapshot
+    environment:
+      - RPC_NODE=https://neutron-rpc.polkachu.com:443
+      - INTERVAL=2000
+      - NEUTROND_P2P_MAX_NUM_OUTBOUND_PEERS=500
+      - NEUTROND_P2P_MAX_NUM_INBOUND_PEERS=500
+
+  neutron-fork:
+    image: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork
+    volumes:
+      - ./snapshot/:/opt/neutron/snapshot
+    ports:
+      - 1317:1317
+      - 26657:26657
+      - 26656:26656
+      - 9090:9090
+

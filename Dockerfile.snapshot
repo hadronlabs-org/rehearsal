@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+
+FROM debian:bullseye-slim
+RUN apt-get update && apt-get install -y jq curl
+WORKDIR /opt/neutron
+ADD --chmod=0755 https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64 /usr/local/bin/neutrond
+RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/data
+ADD https://raw.githubusercontent.com/neutron-org/mainnet-assets/main/neutron-1-genesis.json /opt/neutron/data/config/genesis.json
+ADD https://snapshots.polkachu.com/addrbook/neutron/addrbook.json /opt/neutron/data/config/addrbook.json
+COPY --chmod=0755 ./scripts/get_state_sync.sh /opt/neutron/get_state_sync.sh
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \
+    curl -f http://127.0.0.1:1317/blocks/1 >/dev/null 2>&1 || exit 1
+
+CMD /opt/neutron/get_state_sync.sh
