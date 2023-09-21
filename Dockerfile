@@ -1,10 +1,13 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:bullseye-slim
-RUN apt-get update && apt-get install -y jq curl
-EXPOSE 26656 26657 1317 9090
+FROM golang:1.20-bullseye
+RUN apt-get update && apt-get install -y jq curl git
+RUN git clone --branch v1.0.4 https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
-ADD --chmod=0755 https://github.com/neutron-org/neutron/releases/download/v1.0.4/neutrond-linux-amd64 /usr/local/bin/neutrond
+
+RUN make install-test-binary
+
+EXPOSE 26656 26657 1317 9090
 RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/data
 COPY ./config/config.toml /opt/neutron/data/config/config.toml
 COPY --chmod=0755 ./scripts/create_genesis.sh /opt/neutron/create_genesis.sh

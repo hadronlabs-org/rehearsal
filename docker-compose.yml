@@ -7,7 +7,7 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
     environment:
       - RPC_NODE=https://neutron-rpc.polkachu.com:443
-      - INTERVAL=2000
+      - INTERVAL=1000
       - NEUTROND_P2P_MAX_NUM_OUTBOUND_PEERS=500
       - NEUTROND_P2P_MAX_NUM_INBOUND_PEERS=500
 

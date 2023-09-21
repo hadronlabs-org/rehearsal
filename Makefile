@@ -9,10 +9,10 @@ build-mainnet-fork-image:
 	@docker buildx build -t neutron-mainnet-fork .
 
 create-mainnet-snapshot:
-	@$(COMPOSE) up -d neutron-snapshot
+	@$(COMPOSE) up neutron-snapshot
 
 start-mainnet-fork:
-	@$(COMPOSE) up -d neutron-fork
+	@$(COMPOSE) up neutron-fork
 
 stop-mainnet-snapshot:
 	@docker stop neutron-mainnet-snapshot

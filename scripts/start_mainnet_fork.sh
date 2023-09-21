@@ -8,15 +8,15 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     echo "Creating genesis..."
     SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
     neutrond add-consumer-section --home /opt/neutron/data
+    neutrond add-genesis-account neutron14xcrdjwwxtf9zr7dvaa97wy056se6r5erln9pf 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
 
     echo "Starting neutron..."
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false > /opt/neutron/logs/neutrond.log 2>&1 &
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
     NEUTRON_PID=$(echo $!)
 
     echo "Neutron started with PID $NEUTRON_PID"
 
     while true; do
-        tail /opt/neutron/logs/neutrond.log -n 25
         STATUS=$(curl -s http://localhost:26657/status)
 
         LAST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.latest_block_height)

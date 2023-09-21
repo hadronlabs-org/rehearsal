@@ -21,14 +21,14 @@ export NEUTROND_P2P_SEEDS
 
 mkdir /opt/neutron/logs -p
 
-neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false > /opt/neutron/logs/neutrond.log 2>&1 &
+neutrond start --home /opt/neutron/data &
 
 NEUTRON_PID=$(echo $!)
 
 echo "Neutron started with PID $NEUTRON_PID"
 
 while true; do
-    tail /opt/neutron/logs/neutrond.log -n 100 | grep -iE "Applied|Fetching|Header" || true
+    #tail /opt/neutron/logs/neutrond.log -n 100 | grep -iE "Applied|Fetching|Header" || true
     STATUS=$(curl -s http://localhost:26657/status)
     CATCHING_UP=$(echo "$STATUS" | jq -r .result.sync_info.catching_up)
     LAST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.latest_block_height)
@@ -45,5 +45,6 @@ kill -9 $NEUTRON_PID
 echo "Neutron stopped"
 
 echo "Exporting state, please wait..."
+sleep 10
 neutrond export --home /opt/neutron/data > /opt/neutron/snapshot/snapshot.json
 echo "State exported to /opt/neutron/snapshot/snapshot.json. Exiting..."
