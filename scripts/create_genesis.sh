@@ -12,7 +12,7 @@ WASM_SEQUENCES=$((WASM_SEQUENCES + 1))
 
 UTC_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-ADMIN_ACCOUNT=neutron1m9l358xunhhwds0568za49mzhvuxx9ux8xafx2
+ADMIN_ACCOUNT=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
 
 SINGLE_PROPOSAL_CONFIG='{
   "threshold": {
