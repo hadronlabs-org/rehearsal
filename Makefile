@@ -3,10 +3,10 @@
 COMPOSE ?= docker-compose
 
 build-mainnet-snapshot-image:
-	@docker buildx build -t neutron-mainnet-snapshot -f Dockerfile.snapshot .
+	@docker buildx build --load -t neutron-mainnet-snapshot -f Dockerfile.snapshot .
 
 build-mainnet-fork-image:
-	@docker buildx build -t neutron-mainnet-fork .
+	@docker buildx build --load -t neutron-mainnet-fork .
 
 create-mainnet-snapshot:
 	@$(COMPOSE) up neutron-snapshot
