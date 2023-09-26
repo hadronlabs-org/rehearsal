@@ -21,7 +21,14 @@ Ensure that you have the following installed:
 - **Node.js**: The project is tested with version 16. Please ensure this version is installed.
 
 ## Importance of Mainnet Fork
-Recent events related to proposal #10 on the Neutron network highlighted the significance of thorough preliminary testing. An omission of the to_remove parameter led to the proposal's failure. More details can be found on [the post with issue description](https://forum.neutron.org/t/proposal-14-launching-the-neutron-grants-program/95/36), [proposal #10 page](https://www.mintscan.io/neutron/dao/proposals/10/single/neutron1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshlt6zh) and the [data structure](https://github.com/neutron-org/neutron-dao/blob/19b61dd495a9fe1e9d09b8e482e54da8710e6eb2/contracts/dao/cwd-core/src/msg.rs#L82) on GitHub.
+Creating a mainnet fork has various applications and use cases:
+
+Safeguarding Real Assets: Before deploying a major update, changes can be tested on the fork, ensuring that real assets are not jeopardized.
+Prototyping New Features: New ideas and features can be rapidly prototyped and iterated upon using a fork, without disrupting the main network.
+Testing Contracts: Before deploying, smart contracts can be tested rigorously in an environment that simulates the real world, catching potential vulnerabilities.
+Training and Education: A fork provides an excellent environment for developers to learn and get accustomed to the network's nuances without any real-world consequences.
+Debugging and Troubleshooting: If any issues arise on the mainnet, they can be reproduced on the fork for a deeper analysis.
+This approach strengthens trust in the blockchain community and helps in preventing unforeseen problems when changes are made live.
 
 # Directory Structure
 
