@@ -63,19 +63,14 @@ Make sure to set these variables appropriately in the `docker-compose.yml` befor
 ## Getting Started
 
 1. **Creating a Mainnet Snapshot**
-   - Ensure you have a node connected to the mainnet.
-   - **Stop your node before exporting**.
    - Use the provided command:
      ```bash
      make build-mainnet-snapshot-image
      ```
-     Which internally runs `neutrond export`.
+     Which internally runs `neutrond export`. This command will take a while (about an hour) until it will prepare mainnet snapshot and put it into **`./snapshot` directory**
 
 2. **Starting, Stopping and Managing the Snapshot and Fork**
    - For detailed steps on snapshot management and launching your fork, refer to the commands section below.
-
-3. **Optimizing Fork Launch Time**
-   - Note: Launching a node from a large genesis can be time-consuming. To expedite the launch, after successfully initializing the blockchain, halt your node and backup the `data` and `wasm` directories. If reverting to the initial state becomes necessary, use these backups instead of a full genesis restart.
 
 ## Commands
 
