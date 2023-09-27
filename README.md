@@ -7,7 +7,7 @@ This repository provides utilities to automate the creation and execution of a m
 To ensure smooth operation with this project, the following hardware specifications are recommended:
 
 1. **Central Processing Unit (CPU):** Minimum of 4 cores; 8 cores are recommended.
-2. **Random Access Memory (RAM):** A minimum of 8GB, but 16GB or more is recommended for optimal performance.
+2. **Random Access Memory (RAM):** A minimum of 16GB, but 32GB or more is recommended for optimal performance.
 3. **Storage:** At least 20GB of free space on an SSD. An NVMe SSD is recommended for faster read/write operations.
 4. **Network:** A stable internet connection with a minimum download speed of 100 Mbps.
 
