@@ -26,6 +26,8 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         fi
     fi
 
+    crudini --set /opt/neutron/data/config/app.toml api enable true
+
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
     NEUTRON_PID=$(echo $!)
