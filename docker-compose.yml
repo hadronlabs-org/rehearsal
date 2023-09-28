@@ -16,6 +16,9 @@ services:
     container_name: neutron-mainnet-fork
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
+      - ./custom/:/opt/neutron/custom
+    environment:
+      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
     ports:
       - 1317:1317
       - 26657:26657

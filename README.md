@@ -81,6 +81,42 @@ Make sure to set these variables appropriately in the `docker-compose.yml` befor
 2. **Starting, Stopping and Managing the Snapshot and Fork**
    - For detailed steps on snapshot management and launching your fork, refer to the commands section below.
 
+## Customizing the Genesis
+
+Users have the flexibility to integrate their own settings into the genesis. This can be easily accomplished by creating a script named `custom.sh`. The script will receive the paths to the current genesis and where to place the modified genesis as inputs. Follow the steps below:
+
+1. **Create a Custom Script:**
+   - Write a script named `custom.sh` that contains your specific configurations or logic.
+   - The script will receive two arguments: the path to the current genesis and the path where the modified genesis should be placed.
+
+2. **Script Example:**
+    Here is an example of how the script might look:
+    ```bash
+    #!/bin/bash
+    
+    CURRENT_GENESIS_PATH="$1"
+    MODIFIED_GENESIS_PATH="$2"
+
+    # Your custom configurations and modifications here
+
+    cp $CURRENT_GENESIS_PATH $MODIFIED_GENESIS_PATH
+    ```
+
+3. **Provide the Path to Docker Container:**
+   - Ensure that the Docker container has access to the directory where your `custom.sh` script is stored. In the case of Docker Compose, you can add an entry like the following in the `docker-compose.yml` file:
+   
+     ```yaml
+     volumes:
+       - ./custom/:/opt/neutron/custom
+     ```
+   - This ensures that the custom script is accessible within the Docker container, enabling it to modify the genesis accordingly.
+
+4. **Execution:**
+   - The `custom.sh` script will be executed automatically, applying your personalized settings to the genesis during the initialization process.
+
+This approach provides a seamless way to tailor the genesis to specific requirements or configurations while maintaining the integrity of the original setup. Ensure the `custom.sh` script has appropriate permissions to execute and handle the genesis files.
+
+
 ## Commands
 
 1. **Building the Mainnet Snapshot Image**

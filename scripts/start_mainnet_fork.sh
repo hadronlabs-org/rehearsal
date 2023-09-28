@@ -2,13 +2,29 @@
 
 neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
+CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
+
 if [ ! -d "/opt/neutron/data_backup" ]; then    
     echo "Previous state backup not found, starting from genesis..."
     mkdir /opt/neutron/logs -p
     echo "Creating genesis..."
     SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
     neutrond add-consumer-section --home /opt/neutron/data
-    neutrond add-genesis-account neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+    neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
+        echo "Applying custom configurations..."
+        TEMP_GENESIS=$(mktemp genesis_XXXX.json)
+        CUSTOM_GENESIS=$(mktemp custom_genesis_XXXX.json)
+        cp /opt/neutron/data/config/genesis.json $TEMP_GENESIS
+        /bin/sh $CUSTOM_SCRIPT_PATH $TEMP_GENESIS $CUSTOM_GENESIS
+        if jq empty "$CUSTOM_GENESIS"; then
+            cp $CUSTOM_GENESIS /opt/neutron/data/config/genesis.json
+        else
+            echo "Custom genesis is not valid, aborting..."
+            exit 1
+        fi
+    fi
 
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
