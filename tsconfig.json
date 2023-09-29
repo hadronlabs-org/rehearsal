@@ -1,3 +1,13 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:7b780c4047abf54bbf039d3f7779f1a353ffb962473ff03453a8351311e1117c
-size 274
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "types": ["node"],
+    "module": "commonjs",
+    "lib": ["esnext","DOM"],
+    "outDir": "lib",
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
