@@ -76,7 +76,9 @@ Make sure to set these variables appropriately in the `docker-compose.yml` befor
      ```bash
      make build-mainnet-snapshot-image
      ```
-     Which internally runs `neutrond export`. This command will take a while (about an hour) until it will prepare mainnet snapshot and put it into **`./snapshot` directory**
+     Which internally runs `neutrond export`. This command will take a while (about an hour) until it will prepare mainnet snapshot and put it into **`./snapshot`** directory.
+
+     > **Please aware that this is long operation and can take at least 20 minutes, dependently on your hardware performance.**
 
 2. **Starting, Stopping and Managing the Snapshot and Fork**
    - For detailed steps on snapshot management and launching your fork, refer to the commands section below.
