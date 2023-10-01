@@ -6,9 +6,14 @@ CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 
 if [ ! -d "/opt/neutron/data_backup" ]; then    
     echo "Previous state backup not found, starting from genesis..."
-    mkdir /opt/neutron/logs -p
+    export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
+    if [ ! -e "$SNAPSHOT_INPUT" ]; then
+        echo "Snapshot not found, please create it using 'make create-mainnet-snapshot' command. Aborting..."
+        exit 1
+    fi
+
     echo "Creating genesis..."
-    SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
+    GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
     neutrond add-consumer-section --home /opt/neutron/data
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
 
