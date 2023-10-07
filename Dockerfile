@@ -2,7 +2,7 @@
 
 FROM golang:1.20-bullseye
 RUN apt-get update && apt-get install -y jq curl git crudini
-RUN git clone --branch v1.0.4 https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch feat/no-signature-checker https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
