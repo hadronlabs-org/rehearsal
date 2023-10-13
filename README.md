@@ -169,6 +169,14 @@ This approach provides a seamless way to tailor the genesis to specific requirem
    make stop-mainnet-fork
    ```
 
+### Running explorer
+
+   To run PingPub explorer, please use the following command:
+
+   ```bash
+   docker run --rm -p 5173:5173 -p 1318:1318 -p 26858:26858 --env API_URL=http://dev_server:1317 --env RPC_URL=http://dev_server:26657 neutronorg/pingpub
+   ```
+
 ## Contribution
 
 If you wish to contribute to this project or report any issues, please open a pull request or raise an issue in the repository. For further study, we recommend checking out the [repository on GitHub](https://github.com/neutron-org/mainnet-fork-tests).
