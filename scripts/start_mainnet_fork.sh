@@ -3,13 +3,20 @@
 neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
+SNAPSHOT_DOWNLOAD_URL="http://172.17.0.1:8080"
 
 if [ ! -d "/opt/neutron/data_backup" ]; then    
     echo "Previous state backup not found, starting from genesis..."
     export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
     if [ ! -e "$SNAPSHOT_INPUT" ]; then
-        echo "Snapshot not found, please create it using 'make create-mainnet-snapshot' command. Aborting..."
-        exit 1
+        echo "Snapshot not found, downloading it from snapshot service..."
+
+        METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/.metadata.json)
+        SNAPSHOT_ARCHIVE=$(echo "$METADATA" | jq -r .snapshot_path)
+        SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
+        wget ${SNAPSHOT_DOWNLOAD_URL}/${SNAPSHOT_ARCHIVE} -O /opt/neutron/snapshot/${SNAPSHOT_ARCHIVE}
+        gunzip /opt/neutron/snapshot/${SNAPSHOT_ARCHIVE} 
+        mv $SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
     fi
 
     echo "Creating genesis..."
