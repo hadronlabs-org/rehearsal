@@ -14,9 +14,9 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/.metadata.json)
         SNAPSHOT_ARCHIVE=$(echo "$METADATA" | jq -r .snapshot_path)
         SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
-        wget ${SNAPSHOT_DOWNLOAD_URL}/${SNAPSHOT_ARCHIVE} -O /opt/neutron/snapshot/${SNAPSHOT_ARCHIVE}
-        gunzip /opt/neutron/snapshot/${SNAPSHOT_ARCHIVE} 
-        mv $SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
+        wget ${SNAPSHOT_DOWNLOAD_URL}/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
+        gunzip -f /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE 
+        mv -f /opt/neutron/snapshot/$SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
     fi
 
     echo "Creating genesis..."
