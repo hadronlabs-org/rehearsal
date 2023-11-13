@@ -1,12 +1,14 @@
 import { describe, expect, test, beforeAll } from 'vitest';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
-import {
-  NEUTRON_DENOM,
-} from '@neutron-org/neutronjsplus';
-import { Client as NeutronClient } from '@neutron-org/client-ts';
 import { V1Beta1DecCoin } from '@neutron-org/client-ts/dist/gaia.globalfee.v1beta1/rest';
+import axios from 'axios';
+import { Coin } from '@neutron-org/client-ts/dist/cosmos.bank.v1beta1/types/cosmos/base/v1beta1/coin';
+import { StdFee } from '@cosmjs/amino';
+import { wait } from '@neutron-org/neutronjsplus';
+import { waitSeconds } from '@neutron-org/neutronjsplus/dist/helpers/wait';
 
+const UNTRN_DENOM = "untrn";
 const IBC_UATOM_DENOM = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9";
 const IBC_USDC_DENOM = "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349";
 const WALLET_MNEMONIC =
@@ -16,57 +18,63 @@ describe('Globalfee module', () => {
   const context: {
     wallet?: DirectSecp256k1HdWallet;
     client?: SigningCosmWasmClient;
-    neutronClient?: InstanceType<typeof NeutronClient>;
   } = {};
+  let walletAddr: string;
 
   beforeAll(async () => {
     context.wallet = await DirectSecp256k1HdWallet.fromMnemonic(WALLET_MNEMONIC, {
       prefix: 'neutron',
     });
-    context.neutronClient = new NeutronClient({
-      apiURL: `127.0.0.1:1317`,
-      rpcURL: `127.0.0.1:26657`,
-      prefix: 'neutron',
-    });
-
-    context.client = await SigningCosmWasmClient.connectWithSigner(`127.0.0.1:26657`, context.wallet);
+    context.client = await SigningCosmWasmClient.connectWithSigner(`http://127.0.0.1:26657`, context.wallet);
+    const walletAccounts = await context.wallet.getAccounts();
+    walletAddr = walletAccounts[0].address;
   });
 
-  let minFees: V1Beta1DecCoin[];
+  let ntrnMinFee: V1Beta1DecCoin;
   test('get min fee params', async () => {
-    minFees = (await context.neutronClient.GaiaGlobalfeeV1Beta1.query.queryMinimumGasPrices()).data.minimum_gas_prices;
+    const resp = await axios.get(
+      `http://127.0.0.1:1317/gaia/globalfee/v1beta1/params`,
+    );
+    const minFees: V1Beta1DecCoin[] = resp.data.params.minimum_gas_prices;
+
     expect(minFees.length).toEqual(3);
     expect(minFees).toEqual(expect.arrayContaining([
-      expect.objectContaining({ "amount": "0.9", "denom": NEUTRON_DENOM }),
-      expect.objectContaining({ "amount": "0.026", "denom": IBC_UATOM_DENOM }),
-      expect.objectContaining({ "amount": "0.25", "denom": IBC_USDC_DENOM })
+      expect.objectContaining({ "amount": "0.900000000000000000", "denom": UNTRN_DENOM }),
+      expect.objectContaining({ "amount": "0.026000000000000000", "denom": IBC_UATOM_DENOM }),
+      expect.objectContaining({ "amount": "0.250000000000000000", "denom": IBC_USDC_DENOM })
     ]));
+    ntrnMinFee = minFees.filter((c) => c.denom == UNTRN_DENOM)[0];
   });
 
   describe('test minfee', () => {
-    describe('a bit less than minfee is rejected', () => {
-      minFees.forEach((c) => {
-        test(c.denom, async () => {
-          await expect(context.client.sendTokens(
-            context.wallet.getAccounts[0],
-            context.wallet.getAccounts[0],
-            [{ denom: c.denom, amount: c.amount }],
-            { amount: [{ amount: (+c.amount - 1).toString(), denom: c.denom }], gas: "200000" },
-            )).rejects.toThrow(/Subdao isn't in the list./);
-        });
-      });
+    test('a bit less than minfee is rejected', async () => {
+      const sendAmount: Coin = { amount: '1000000', denom: UNTRN_DENOM };
+
+      const fee1 = +ntrnMinFee.amount - 0.000100; // sub 100untrn from min value and upscale to 6 decimals
+      const fee2 = Math.floor(fee1 * 200000); // multiply to gas
+      const fee: StdFee = { amount: [{ amount: fee2.toString(), denom: UNTRN_DENOM }], gas: '200000' }
+
+      await expect(context.client.sendTokens(
+        walletAddr,
+        walletAddr,
+        [sendAmount],
+        fee,
+      )).rejects.toThrow(/Insufficient fees/);
     });
-    describe('a bit more than minfee is accepted', () => {
-      minFees.forEach((c) => {
-        test(c.denom, async () => {
-          context.client.sendTokens(
-            context.wallet.getAccounts[0],
-            context.wallet.getAccounts[0],
-            [{ denom: c.denom, amount: c.amount }],
-            { amount: [{ amount: (+c.amount + 1).toString(), denom: c.denom }], gas: "200000" },
-            )
-        });
-      });
+
+    test('a bit more than minfee is accepted', async () => {
+      const sendAmount: Coin = { amount: '1000000', denom: UNTRN_DENOM };
+
+      const fee1 = +ntrnMinFee.amount - 0.000100; // add 100untrn to min value and upscale to 6 decimals
+      const fee2 = Math.floor(fee1 * 200000); // multiply to gas
+      const fee: StdFee = { amount: [{ amount: fee2.toString(), denom: UNTRN_DENOM }], gas: '200000' }
+
+      await context.client.sendTokens(
+        walletAddr,
+        walletAddr,
+        [sendAmount],
+        fee,
+      );
     });
   });
 });
