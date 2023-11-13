@@ -5,8 +5,6 @@ import { V1Beta1DecCoin } from '@neutron-org/client-ts/dist/gaia.globalfee.v1bet
 import axios from 'axios';
 import { Coin } from '@neutron-org/client-ts/dist/cosmos.bank.v1beta1/types/cosmos/base/v1beta1/coin';
 import { StdFee } from '@cosmjs/amino';
-import { wait } from '@neutron-org/neutronjsplus';
-import { waitSeconds } from '@neutron-org/neutronjsplus/dist/helpers/wait';
 
 const UNTRN_DENOM = "untrn";
 const IBC_UATOM_DENOM = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9";
