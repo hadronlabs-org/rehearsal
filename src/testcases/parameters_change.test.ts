@@ -6,7 +6,6 @@ import axios from 'axios';
 import { GasPrice } from '@cosmjs/stargate';
 
 const UNTRN_DENOM = 'untrn';
-const NEUTRON_DAO_CORE_CONTRACT = 'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff';
 const NEUTRON_VAULT_CONTRACT = 'neutron1qeyjez6a9dwlghf9d6cy44fxmsajztw257586akk6xn6k88x0gus5djz4e';
 const PROPOSAL_CONTRACT = 'neutron1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshlt6zh';
 const PRE_PROPOSE_CONTRACT = 'neutron1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsgs8v0z';
@@ -43,7 +42,7 @@ describe('Parameters change via Neutron DAO', () => {
                 { bond: {} },
                 'auto',
                 undefined,
-                [{ amount: '100_000', denom: UNTRN_DENOM }],
+                [{ amount: '1_000_000', denom: UNTRN_DENOM }],
             );
         })
         test('get icq module params', async () => {
