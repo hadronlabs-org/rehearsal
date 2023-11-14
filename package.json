@@ -7,6 +7,8 @@
   "repository": "git@github.com:neutron-org/mainnet-fork-tests.git",
   "scripts": {
     "test": "vitest --run",
+    "test:globalfee": "vitest --run src/testcases/globalfee",
+    "test:parameters_change": "vitest --run src/testcases/parameters_change",
     "watch": "vitest",
     "build-ts-client": "ts-node ./src/rebuild-client.ts",
     "lint": "eslint src/**/*.ts",
