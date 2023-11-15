@@ -8,7 +8,9 @@
   "scripts": {
     "test": "vitest --run",
     "test:globalfee": "vitest --run src/testcases/globalfee",
-    "test:parameters_change": "vitest --run src/testcases/parameters_change",
+    "test:parameters_change_bindings": "vitest --run src/testcases/parameters_change_bindings",
+    "test:governance": "vitest --run src/testcases/governance",
+    "test:ibc_hooks": "vitest --run src/testcases/ibc_hooks",
     "watch": "vitest",
     "build-ts-client": "ts-node ./src/rebuild-client.ts",
     "lint": "eslint src/**/*.ts",
