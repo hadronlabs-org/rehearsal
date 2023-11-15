@@ -1,4 +1,4 @@
-# ===== FUNCTIONS
+# ========= FUNCTIONS =======
 
 # wait for tx with timeout
 function wait_for_tx() {
@@ -39,9 +39,8 @@ function execute_contract() {
 # node ./bin/ibcheetah.js https://rest-falcron.pion-1.ntrn.tech provider
 # cat out.json | fx 'x.filter(y => y.channel.port_id === "transfer" && y.channel.state === "STATE_OPEN" && y.connection.client_status === "Active")'
 
-# ===== VARIABLES
+# ========= CONFIG =========
 
-# ==================== mainnet fork (PICK)
 GAS_PRICES="1untrn"
 CHAINID="neutron-1"
 TEST_WALLET="neutrond_mainnet_rehearsal" # neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
@@ -63,7 +62,11 @@ VALIDATOR_ADDR="cosmosvaloper10v6wvdenee8r9l6wlsphcgur2ltl8ztkfrvj9a"
 IBC_TRANSFER_ADDRESS=neutron19lruyp88873vlunjrdfnz3pq4h05f0hdtk7my376v06h5v7zm7eqlsjaf7
 NEUTRON_INTERCHAIN_TXS_ADDRESS="neutron14nfxza0puh5rzz7rmrml6ydcckyyasmfwcnf57snyyel5kud49jqya025q"
 
-# ===== ASTROPORT TEST - SWAP
+# =========================
+
+# ========= TESTS =========
+
+# Astroport SWAP
 
 ## ==== execute swap
 execute_contract $ASTROPORT_POOL_CONTRACT_ADDRESS  '{"swap": {"offer_asset": {"info": {"native_token": {"denom": "untrn"}}, "amount": "100000"}}}' $TEST_WALLET
