@@ -33,7 +33,6 @@ describe('Parameters change via Neutron DAO', () => {
         walletAddr = walletAccounts[0].address;
     });
 
-    let paramsBefore: ParamsInterchainqueriesInfo;
     describe('prepare', () => {
         test('bond funds to Neutron DAO', async () => {
             await context.client.execute(
@@ -45,22 +44,111 @@ describe('Parameters change via Neutron DAO', () => {
                 [{ amount: '1_000_000', denom: UNTRN_DENOM }],
             );
         })
-        test('get icq module params', async () => {
-            const resp = await axios.get(
-                `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+        test('send funds to Neutron DAO', async () => { // will be later sent via proposal
+            const res = await context.client.sendTokens(
+                walletAddr,
+                'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff',
+                [{denom: UNTRN_DENOM, amount: '111'}],
+                200000,
+                'auto',
             );
-            paramsBefore = resp.data.params;
         })
     });
 
-    let newParams: ParamsInterchainqueriesInfo;
-    let proposalId: number;
-    describe('change icq parameters via proposal', () => {
-        test('create a proposal', async () => {
-            newParams = { ...paramsBefore};
-            newParams.query_submit_timeout += 1;
-            const propMsg = updateInterchainqueriesParamsProposal(newParams);
+    // This test covers parameters change via update params bindings
+    // describe('change icq parameters via proposal', () => {
+    //     let paramsBefore: ParamsInterchainqueriesInfo;
+    //     test('get icq module params', async () => {
+    //     const resp = await axios.get(
+    //         `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+    //         );
+    //         paramsBefore = resp.data.params;
+    //     })
+        
+    //     let proposalId: number;
+    //     test('create a proposal', async () => {
+    //         let newParams = { ...paramsBefore};
+    //         newParams.query_submit_timeout += 1;
+    //         const propMsg = updateInterchainqueriesParamsProposal(newParams);
 
+    //         const proposalTx = await context.client.execute(
+    //             walletAddr,
+    //             PRE_PROPOSE_CONTRACT,
+    //             {
+    //                 propose: {
+    //                     msg: {
+    //                         propose: {
+    //                             title: 'increase ICQ module\'s query_submit_timeout',
+    //                             description: 'increase ICQ module\'s query_submit_timeout in testing purposes',
+    //                             msgs: [propMsg],
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //             'auto',
+    //             undefined,
+    //             [{ amount: '1000', denom: UNTRN_DENOM }],
+    //         );
+
+    //         const attribute = getEventAttribute(
+    //             (proposalTx as any).events,
+    //             'wasm',
+    //             'proposal_id',
+    //         );
+
+    //         proposalId = parseInt(attribute);
+    //         expect(proposalId).toBeGreaterThanOrEqual(0);
+    //     });
+
+    //     test('vote for proposal', async () => {
+    //         await context.client.execute(
+    //             walletAddr,
+    //             PROPOSAL_CONTRACT,
+    //             { vote: { proposal_id: proposalId, vote: 'yes' } },
+    //             'auto',
+    //             undefined,
+    //         );
+    //     });
+
+    //     test('expect proposal passed', async () => {
+    //         const proposal: SingleChoiceProposal = await context.client.queryContractSmart(
+    //             PROPOSAL_CONTRACT,
+    //             {proposal: {proposal_id: proposalId}},
+    //         );
+    //         expect(proposal.proposal.status).toEqual('passed');
+    //     });
+
+    //     test('execute proposal', async () => {
+    //         await context.client.execute(
+    //             walletAddr,
+    //             PROPOSAL_CONTRACT,
+    //             { execute: { proposal_id: proposalId } },
+    //             'auto',
+    //             undefined,
+    //         );
+    //     });
+
+    //     test('compare new parameters to the previous ones', async () => {
+    //         const resp = await axios.get(
+    //             `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+    //         );
+    //         const paramsAfter: ParamsInterchainqueriesInfo = resp.data.params;
+    //         expect(paramsAfter.query_submit_timeout).toEqual(paramsBefore.query_submit_timeout + 1);
+    //     });
+    // });
+
+    describe('change cron parameters via stargate proposal', () => {
+        let paramsBefore: ParamsCronInfo;
+        test('get icq module params', async () => {
+            const resp = await axios.get(
+                `http://127.0.0.1:1317/neutron/cron/params`,
+            );
+            paramsBefore = resp.data.params;
+            expect(paramsBefore.limit).toEqual('5');
+        })
+
+        let proposalId: number;
+        test('create a proposal', async () => {
             const proposalTx = await context.client.execute(
                 walletAddr,
                 PRE_PROPOSE_CONTRACT,
@@ -68,9 +156,16 @@ describe('Parameters change via Neutron DAO', () => {
                     propose: {
                         msg: {
                             propose: {
-                                title: 'increase ICQ module\'s query_submit_timeout',
-                                description: 'increase ICQ module\'s query_submit_timeout in testing purposes',
-                                msgs: [propMsg],
+                                title: 'increase cron module\'s limit',
+                                description: 'increase cron module\'s limit in testing purposes',
+                                msgs: [
+                                    {
+                                        stargate: {
+                                            type_url: '/cosmos.adminmodule.adminmodule.MsgSubmitProposal',
+                                            value: 'CpkBCh0vbmV1dHJvbi5jcm9uLk1zZ1VwZGF0ZVBhcmFtcxJ4Ci5uZXV0cm9uMWh4c2tmZHhwcDVocWd0amo2YW02bmtqZWZoZnpqMzU5eDBhcjN6EkYKQm5ldXRyb24xZnV5eHd4bHNnamtmam14ZnRocTg0MjdkbTJhbTN5YTNjd2NkcjhnbHMyOWw3amFkdGF6c3V5endjYxAKEkJuZXV0cm9uMXN1aGdmNXN2aHU0dXNydXJ2eHpsZ241NGtzeG1uOGdsamFyanR4cW5hcHY4a2pucDRucnN0ZHh2ZmY='
+                                        }
+                                    }
+                                ]
                             },
                         },
                     },
@@ -103,7 +198,7 @@ describe('Parameters change via Neutron DAO', () => {
         test('expect proposal passed', async () => {
             const proposal: SingleChoiceProposal = await context.client.queryContractSmart(
                 PROPOSAL_CONTRACT,
-                {proposal: {proposal_id: proposalId}},
+                { proposal: { proposal_id: proposalId } },
             );
             expect(proposal.proposal.status).toEqual('passed');
         });
@@ -120,13 +215,107 @@ describe('Parameters change via Neutron DAO', () => {
 
         test('compare new parameters to the previous ones', async () => {
             const resp = await axios.get(
-                `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+                `http://127.0.0.1:1317/neutron/cron/params`,
             );
-            const paramsAfter: ParamsInterchainqueriesInfo = resp.data.params;
-            expect(paramsAfter.query_submit_timeout).toEqual(paramsBefore.query_submit_timeout + 1);
+            const paramsAfter: ParamsCronInfo = resp.data.params;
+            expect(paramsBefore.limit).not.toEqual(paramsAfter.limit);
+            expect(paramsAfter.limit).toEqual('10');
+        });
+    });
+
+    describe('fulfill a bank send proposal', () => {
+        let balanceBefore: V1Beta1DecCoin;
+        test('get balance before', async () => {
+            balanceBefore = await context.client.getBalance('neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3', UNTRN_DENOM);
+        })
+
+        let proposalId: number;
+        test('create a proposal', async () => {
+            const proposalTx = await context.client.execute(
+                walletAddr,
+                PRE_PROPOSE_CONTRACT,
+                {
+                    propose: {
+                        msg: {
+                            propose: {
+                                title: 'send funds to a test address',
+                                description: 'send 111 untrn to neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                                msgs: [
+                                    {
+                                        bank: {
+                                            send: {
+                                                to_address: 'neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                                                amount: [
+                                                    {
+                                                        denom: UNTRN_DENOM,
+                                                        amount: '111',
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    },
+                },
+                'auto',
+                undefined,
+                [{ amount: '1000', denom: UNTRN_DENOM }],
+            );
+
+            const attribute = getEventAttribute(
+                (proposalTx as any).events,
+                'wasm',
+                'proposal_id',
+            );
+
+            proposalId = parseInt(attribute);
+            expect(proposalId).toBeGreaterThanOrEqual(0);
+        });
+
+        test('vote for proposal', async () => {
+            await context.client.execute(
+                walletAddr,
+                PROPOSAL_CONTRACT,
+                { vote: { proposal_id: proposalId, vote: 'yes' } },
+                'auto',
+                undefined,
+            );
+        });
+
+        test('expect proposal passed', async () => {
+            const proposal: SingleChoiceProposal = await context.client.queryContractSmart(
+                PROPOSAL_CONTRACT,
+                { proposal: { proposal_id: proposalId } },
+            );
+            expect(proposal.proposal.status).toEqual('passed');
+        });
+
+        test('execute proposal', async () => {
+            await context.client.execute(
+                walletAddr,
+                PROPOSAL_CONTRACT,
+                { execute: { proposal_id: proposalId } },
+                'auto',
+                undefined,
+            );
+        });
+
+        test('check whether funds have been sent', async () => {
+            const balanceAfter: V1Beta1DecCoin = await context.client.getBalance(
+                'neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                UNTRN_DENOM,
+            );
+            expect(+balanceAfter.amount).toEqual(+balanceBefore.amount + 111);
         });
     });
 });
+
+type ParamsCronInfo = {
+    security_address: string;
+    limit: number;
+};
 
 type ParamsInterchainqueriesInfo = {
     query_submit_timeout: number;
