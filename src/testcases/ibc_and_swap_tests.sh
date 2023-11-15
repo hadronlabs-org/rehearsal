@@ -42,11 +42,11 @@ function execute_contract() {
 # ===== VARIABLES
 
 # ==================== mainnet fork (PICK)
-GAS_PRICES="0.5untrn"
+GAS_PRICES="1untrn"
 CHAINID="neutron-1"
-TEST_WALLET="TODO"
-KEYS_HOME="~/.neutrond-mainnet" # TODO
-NODE="https://rpc-talzor.neutron-1.neutron.org:443" # TODO
+TEST_WALLET="neutrond_mainnet_rehearsal" # neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+KEYS_HOME="~/.neutrond-rehearsal"
+NODE="37.27.55.151:26657"
 ASTROPORT_POOL_CONTRACT_ADDRESS="neutron1e22zh5p8meddxjclevuhjmfj69jxfsa8uu3jvht72rv9d8lkhves6t8veq" # NTRN-ATOM pool
 TRANSFER_CHANNEL_ID="TODO"
 TRANSFER_DESTINATION="cosmos1mwfj5j8v2aafqqnjekeqtupgc6894033nvtgre"
@@ -55,21 +55,6 @@ CONNECTION_ID="TODO"
 ICA_CONNECTION_ID="TODO"
 ICA_NODE="TODO"
 VALIDATOR_ADDR="TODO"
-
-# ==================== testnet (PICK)
-GAS_PRICES="0.05untrn"
-CHAINID="pion-1"
-TEST_WALLET="pion1_testnet_wallet" # neutron1mwfj5j8v2aafqqnjekeqtupgc6894033hnz2e7
-KEYS_HOME="~/.neutrond"
-NODE="https://rpc-falcron.pion-1.ntrn.tech:443"
-ASTROPORT_POOL_CONTRACT_ADDRESS="neutron1j9eaaudut70pk7mhfnc48qugul0z53s3ygan60x7k3yj944wue6qpxlzdr"
-TRANSFER_CHANNEL_ID="channel-96"
-TRANSFER_DESTINATION="cosmos1mwfj5j8v2aafqqnjekeqtupgc6894033nvtgre"
-TRANSFER_DESTINATION_NODE="https://rpc.provider-sentry-01.rs-testnet.polypore.xyz:443"
-CONNECTION_ID="connection-42"
-ICA_NODE="https://rpc.sentry-01.theta-testnet.polypore.xyz:443"
-ICA_CONNECTION_ID="connection-129"
-VALIDATOR_ADDR="cosmosvaloper10v6wvdenee8r9l6wlsphcgur2ltl8ztkfrvj9a"
 
 # ===== ASTROPORT TEST - SWAP
 
@@ -94,7 +79,7 @@ gaiad q bank balances $TRANSFER_DESTINATION --node $TRANSFER_DESTINATION_NODE
 ## ==== Make IBC transfer from contract (requires ibc_transfer contract)
 
 ### Deploy IBC transfer contracct
-IBC_TRANSFER_STORE_RES_1=$(neutrond tx wasm store ./artifacts/ibc_transfer.wasm --from $TEST_WALLET --gas 500000 --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=sync -y --output json)
+IBC_TRANSFER_STORE_RES_1=$(neutrond tx wasm store ./src/artifacts/ibc_transfer.wasm --from $TEST_WALLET --gas 1000000 --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=sync -y --output json)
 IBC_TRANSFER_STORE_RES=$(neutrond q tx $(echo $IBC_TRANSFER_STORE_RES_1 | jq -r '.txhash') --output json)
 IBC_TRANSFER_CODE_ID=$(echo $IBC_TRANSFER_STORE_RES | jq -r '.logs[0].events[1].attributes[1].value')
 echo "IBC_TRANSFER_CODE_ID: ${IBC_TRANSFER_CODE_ID}"
@@ -126,7 +111,7 @@ gaiad q ibc-transfer denom-trace TODO_IBC_DENOM --node $TRANSFER_DESTINATION_NOD
 
 # ======= ICA tests (Create ICA, execute ICA delegate) (requires neutron_interchain_txs contract)
 ## Deploy interchain txs contract
-NEUTRON_INTERCHAIN_TXS_STORE_RES_1=$(neutrond tx wasm store ./artifacts/neutron_interchain_txs.wasm --from $TEST_WALLET --gas 5000000 --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=sync -y --output json)
+NEUTRON_INTERCHAIN_TXS_STORE_RES_1=$(neutrond tx wasm store ./src/artifacts/neutron_interchain_txs.wasm --from $TEST_WALLET --gas 5000000 --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=sync -y --output json)
 NEUTRON_INTERCHAIN_TXS_STORE_RES=$(neutrond q tx $(echo $NEUTRON_INTERCHAIN_TXS_STORE_RES_1 | jq -r '.txhash') --output json)
 NEUTRON_INTERCHAIN_TXS_CODE_ID=$(echo $NEUTRON_INTERCHAIN_TXS_STORE_RES | jq -r '.logs[0].events[1].attributes[1].value')
 echo "NEUTRON_INTERCHAIN_TXS_CODE_ID: ${NEUTRON_INTERCHAIN_TXS_CODE_ID}"
