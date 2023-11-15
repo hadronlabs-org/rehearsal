@@ -5,11 +5,27 @@ import { V1Beta1DecCoin } from '@neutron-org/client-ts/dist/gaia.globalfee.v1bet
 import axios from 'axios';
 import { GasPrice } from '@cosmjs/stargate';
 
+// ========= CONFIG =========
+
+const NEUTRON_NODE_RPC_ADDR = 'http://127.0.0.1:26657';
+const NEUTRON_NODE_REST_ADDR = 'http://127.0.0.1:1317';
+
+const PREPARATION_BOND_AMOUNT = '1_000_000'; // how much will be bonded by the wallet to the Neutron DAO
+
+const EXPECTED_CRON_MODULE_LIMIT = '5';
+const NEW_CRON_MODULE_LIMIT = '10'; // encoded in the base64 msg below
+const CRON_MODULE_UPDATE_PARAMS_MSG = 'CpkBCh0vbmV1dHJvbi5jcm9uLk1zZ1VwZGF0ZVBhcmFtcxJ4Ci5uZXV0cm9uMWh4c2tmZHhwcDVocWd0amo2YW02bmtqZWZoZnpqMzU5eDBhcjN6EkYKQm5ldXRyb24xZnV5eHd4bHNnamtmam14ZnRocTg0MjdkbTJhbTN5YTNjd2NkcjhnbHMyOWw3amFkdGF6c3V5endjYxAKEkJuZXV0cm9uMXN1aGdmNXN2aHU0dXNydXJ2eHpsZ241NGtzeG1uOGdsamFyanR4cW5hcHY4a2pucDRucnN0ZHh2ZmY=';
+
+const UNTRN_TRANSFER_PROPOSAL_AMOUNT = '111';
+const TRANSFER_PROPOSAL_RECIPIENT_ADDR = 'neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3';
+
+// ==========================
+
 const UNTRN_DENOM = 'untrn';
+const NEUTRON_DAO_CONTRACT = 'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff';
 const NEUTRON_VAULT_CONTRACT = 'neutron1qeyjez6a9dwlghf9d6cy44fxmsajztw257586akk6xn6k88x0gus5djz4e';
 const PROPOSAL_CONTRACT = 'neutron1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshlt6zh';
 const PRE_PROPOSE_CONTRACT = 'neutron1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsgs8v0z';
-export const ADMIN_MODULE_ADDRESS = 'neutron1hxskfdxpp5hqgtjj6am6nkjefhfzj359x0ar3z';
 const WALLET_MNEMONIC =
     'banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass';
 
@@ -25,7 +41,7 @@ describe('Governance', () => {
             prefix: 'neutron',
         });
         context.client = await SigningCosmWasmClient.connectWithSigner(
-            `http://127.0.0.1:26657`,
+            NEUTRON_NODE_RPC_ADDR,
             context.wallet,
             { gasPrice: GasPrice.fromString('1untrn') },
         );
@@ -41,14 +57,14 @@ describe('Governance', () => {
                 { bond: {} },
                 'auto',
                 undefined,
-                [{ amount: '1_000_000', denom: UNTRN_DENOM }],
+                [{ amount: PREPARATION_BOND_AMOUNT, denom: UNTRN_DENOM }],
             );
         })
         test('send funds to Neutron DAO', async () => { // will be later sent via proposal
-            const res = await context.client.sendTokens(
+            await context.client.sendTokens(
                 walletAddr,
-                'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff',
-                [{denom: UNTRN_DENOM, amount: '111'}],
+                NEUTRON_DAO_CONTRACT,
+                [{denom: UNTRN_DENOM, amount: UNTRN_TRANSFER_PROPOSAL_AMOUNT}],
                 200000,
                 'auto',
             );
@@ -59,10 +75,10 @@ describe('Governance', () => {
         let paramsBefore: ParamsCronInfo;
         test('get icq module params', async () => {
             const resp = await axios.get(
-                `http://127.0.0.1:1317/neutron/cron/params`,
+                NEUTRON_NODE_REST_ADDR + `/neutron/cron/params`,
             );
             paramsBefore = resp.data.params;
-            expect(paramsBefore.limit).toEqual('5');
+            expect(paramsBefore.limit).toEqual(EXPECTED_CRON_MODULE_LIMIT);
         })
 
         let proposalId: number;
@@ -80,7 +96,7 @@ describe('Governance', () => {
                                     {
                                         stargate: {
                                             type_url: '/cosmos.adminmodule.adminmodule.MsgSubmitProposal',
-                                            value: 'CpkBCh0vbmV1dHJvbi5jcm9uLk1zZ1VwZGF0ZVBhcmFtcxJ4Ci5uZXV0cm9uMWh4c2tmZHhwcDVocWd0amo2YW02bmtqZWZoZnpqMzU5eDBhcjN6EkYKQm5ldXRyb24xZnV5eHd4bHNnamtmam14ZnRocTg0MjdkbTJhbTN5YTNjd2NkcjhnbHMyOWw3amFkdGF6c3V5endjYxAKEkJuZXV0cm9uMXN1aGdmNXN2aHU0dXNydXJ2eHpsZ241NGtzeG1uOGdsamFyanR4cW5hcHY4a2pucDRucnN0ZHh2ZmY='
+                                            value: CRON_MODULE_UPDATE_PARAMS_MSG
                                         }
                                     }
                                 ]
@@ -133,18 +149,18 @@ describe('Governance', () => {
 
         test('compare new parameters to the previous ones', async () => {
             const resp = await axios.get(
-                `http://127.0.0.1:1317/neutron/cron/params`,
+                NEUTRON_NODE_REST_ADDR + `/neutron/cron/params`,
             );
             const paramsAfter: ParamsCronInfo = resp.data.params;
             expect(paramsBefore.limit).not.toEqual(paramsAfter.limit);
-            expect(paramsAfter.limit).toEqual('10');
+            expect(paramsAfter.limit).toEqual(NEW_CRON_MODULE_LIMIT);
         });
     });
 
     describe('fulfill a bank send proposal', () => {
         let balanceBefore: V1Beta1DecCoin;
         test('get balance before', async () => {
-            balanceBefore = await context.client.getBalance('neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3', UNTRN_DENOM);
+            balanceBefore = await context.client.getBalance(TRANSFER_PROPOSAL_RECIPIENT_ADDR, UNTRN_DENOM);
         })
 
         let proposalId: number;
@@ -157,16 +173,16 @@ describe('Governance', () => {
                         msg: {
                             propose: {
                                 title: 'send funds to a test address',
-                                description: 'send 111 untrn to neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                                description: 'send ' + UNTRN_TRANSFER_PROPOSAL_AMOUNT + ' untrn to ' + TRANSFER_PROPOSAL_RECIPIENT_ADDR,
                                 msgs: [
                                     {
                                         bank: {
                                             send: {
-                                                to_address: 'neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                                                to_address: TRANSFER_PROPOSAL_RECIPIENT_ADDR,
                                                 amount: [
                                                     {
                                                         denom: UNTRN_DENOM,
-                                                        amount: '111',
+                                                        amount: UNTRN_TRANSFER_PROPOSAL_AMOUNT,
                                                     },
                                                 ],
                                             },
@@ -222,10 +238,10 @@ describe('Governance', () => {
 
         test('check whether funds have been sent', async () => {
             const balanceAfter: V1Beta1DecCoin = await context.client.getBalance(
-                'neutron1qp8zydhcsed5uvlkqh78lvluw0s6vtjchawky3',
+                TRANSFER_PROPOSAL_RECIPIENT_ADDR,
                 UNTRN_DENOM,
             );
-            expect(+balanceAfter.amount).toEqual(+balanceBefore.amount + 111);
+            expect(+balanceAfter.amount).toEqual(+balanceBefore.amount + +UNTRN_TRANSFER_PROPOSAL_AMOUNT);
         });
     });
 });

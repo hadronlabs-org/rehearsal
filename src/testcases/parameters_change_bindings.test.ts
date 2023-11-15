@@ -5,11 +5,20 @@ import { V1Beta1DecCoin } from '@neutron-org/client-ts/dist/gaia.globalfee.v1bet
 import axios from 'axios';
 import { GasPrice } from '@cosmjs/stargate';
 
+// ========= CONFIG =========
+
+const NEUTRON_NODE_RPC_ADDR = 'http://127.0.0.1:26657';
+const NEUTRON_NODE_REST_ADDR = 'http://127.0.0.1:1317';
+
+const PREPARATION_BOND_AMOUNT = '1_000_000'; // how much will be bonded by the wallet to the Neutron DAO
+
+// ==========================
+
 const UNTRN_DENOM = 'untrn';
 const NEUTRON_VAULT_CONTRACT = 'neutron1qeyjez6a9dwlghf9d6cy44fxmsajztw257586akk6xn6k88x0gus5djz4e';
 const PROPOSAL_CONTRACT = 'neutron1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshlt6zh';
 const PRE_PROPOSE_CONTRACT = 'neutron1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsgs8v0z';
-export const ADMIN_MODULE_ADDRESS = 'neutron1hxskfdxpp5hqgtjj6am6nkjefhfzj359x0ar3z';
+const ADMIN_MODULE_ADDRESS = 'neutron1hxskfdxpp5hqgtjj6am6nkjefhfzj359x0ar3z';
 const WALLET_MNEMONIC =
     'banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass';
 
@@ -25,7 +34,7 @@ describe('Parameters change via adminmodule bindings', () => {
             prefix: 'neutron',
         });
         context.client = await SigningCosmWasmClient.connectWithSigner(
-            `http://127.0.0.1:26657`,
+            NEUTRON_NODE_RPC_ADDR,
             context.wallet,
             { gasPrice: GasPrice.fromString('1untrn') },
         );
@@ -41,7 +50,7 @@ describe('Parameters change via adminmodule bindings', () => {
                 { bond: {} },
                 'auto',
                 undefined,
-                [{ amount: '1_000_000', denom: UNTRN_DENOM }],
+                [{ amount: PREPARATION_BOND_AMOUNT, denom: UNTRN_DENOM }],
             );
         })
     });
@@ -50,7 +59,7 @@ describe('Parameters change via adminmodule bindings', () => {
         let paramsBefore: ParamsInterchainqueriesInfo;
         test('get icq module params', async () => {
         const resp = await axios.get(
-            `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+            NEUTRON_NODE_REST_ADDR + `/neutron/interchainqueries/params`,
             );
             paramsBefore = resp.data.params;
         })
@@ -120,7 +129,7 @@ describe('Parameters change via adminmodule bindings', () => {
 
         test('compare new parameters to the previous ones', async () => {
             const resp = await axios.get(
-                `http://127.0.0.1:1317/neutron/interchainqueries/params`,
+                NEUTRON_NODE_REST_ADDR + `/neutron/interchainqueries/params`,
             );
             const paramsAfter: ParamsInterchainqueriesInfo = resp.data.params;
             expect(paramsAfter.query_submit_timeout).toEqual(paramsBefore.query_submit_timeout + 1);
