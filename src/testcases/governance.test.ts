@@ -64,7 +64,7 @@ describe('Governance', () => {
             await context.client.sendTokens(
                 walletAddr,
                 NEUTRON_DAO_CONTRACT,
-                [{denom: UNTRN_DENOM, amount: UNTRN_TRANSFER_PROPOSAL_AMOUNT}],
+                [{ denom: UNTRN_DENOM, amount: UNTRN_TRANSFER_PROPOSAL_AMOUNT }],
                 200000,
                 'auto',
             );
@@ -244,6 +244,93 @@ describe('Governance', () => {
             expect(+balanceAfter.amount).toEqual(+balanceBefore.amount + +UNTRN_TRANSFER_PROPOSAL_AMOUNT);
         });
     });
+
+    describe('fulfill a wasm execute proposal', () => {
+        let daoConfigBefore: NeutronDaoConfig;
+        test('get Neutron DAO config before', async () => {
+            daoConfigBefore = await context.client.queryContractSmart(NEUTRON_DAO_CONTRACT, { config: {} });
+        })
+
+        let proposalId: number;
+        let newDaoConfig: NeutronDaoConfig;
+        test('create a proposal', async () => {
+            newDaoConfig = { ...daoConfigBefore };
+            newDaoConfig.dao_uri = newDaoConfig.dao_uri + ' shit';
+
+            const proposalTx = await context.client.execute(
+                walletAddr,
+                PRE_PROPOSE_CONTRACT,
+                {
+                    propose: {
+                        msg: {
+                            propose: {
+                                title: 'append shit to Neutron DAO URI',
+                                description: 'append shit to the end of the Neutron DAO URI',
+                                msgs: [
+                                    {
+                                        wasm: {
+                                            execute: {
+                                                contract_addr: NEUTRON_DAO_CONTRACT,
+                                                msg: Buffer.from(JSON.stringify({ update_config: { config: newDaoConfig } })).toString('base64'),
+                                                funds: [],
+                                            },
+                                        },
+                                    }
+                                ]
+                            },
+                        },
+                    },
+                },
+                'auto',
+                undefined,
+                [{ amount: '1000', denom: UNTRN_DENOM }],
+            );
+
+            const attribute = getEventAttribute(
+                (proposalTx as any).events,
+                'wasm',
+                'proposal_id',
+            );
+
+            proposalId = parseInt(attribute);
+            expect(proposalId).toBeGreaterThanOrEqual(0);
+        });
+
+        test('vote for proposal', async () => {
+            await context.client.execute(
+                walletAddr,
+                PROPOSAL_CONTRACT,
+                { vote: { proposal_id: proposalId, vote: 'yes' } },
+                'auto',
+                undefined,
+            );
+        });
+
+        test('expect proposal passed', async () => {
+            const proposal: SingleChoiceProposal = await context.client.queryContractSmart(
+                PROPOSAL_CONTRACT,
+                { proposal: { proposal_id: proposalId } },
+            );
+            expect(proposal.proposal.status).toEqual('passed');
+        });
+
+        test('execute proposal', async () => {
+            await context.client.execute(
+                walletAddr,
+                PROPOSAL_CONTRACT,
+                { execute: { proposal_id: proposalId } },
+                'auto',
+                undefined,
+            );
+        });
+
+        test('check whether Neutron DAO config has been changed', async () => {
+            const daoConfigAfter: NeutronDaoConfig = await context.client.queryContractSmart(NEUTRON_DAO_CONTRACT, { config: {} });
+            expect(daoConfigAfter.description).toEqual(daoConfigBefore.description);
+            expect(daoConfigAfter.name).toEqual(daoConfigBefore.name);
+            expect(daoConfigAfter.dao_uri).toEqual(daoConfigBefore.dao_uri + ' shit');
+        });
+    });
 });
 
 type ParamsCronInfo = {
@@ -297,3 +384,9 @@ type SingleChoiceProposal = {
         };
     };
 };
+
+type NeutronDaoConfig = {
+    name: string;
+    description: string;
+    dao_uri: string;
+}
