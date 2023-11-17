@@ -69,28 +69,31 @@ NEUTRON_INTERCHAIN_TXS_ADDRESS="neutron14nfxza0puh5rzz7rmrml6ydcckyyasmfwcnf57sn
 # Astroport SWAP
 
 ## ==== execute swap
-execute_contract $ASTROPORT_POOL_CONTRACT_ADDRESS  '{"swap": {"offer_asset": {"info": {"native_token": {"denom": "untrn"}}, "amount": "100000"}}}' $TEST_WALLET
-RES_1=$(neutrond tx wasm execute ${ASTROPORT_POOL_CONTRACT_ADDRESS} '{"swap": {"offer_asset": {"info": {"native_token": {"denom": "untrn"}}, "amount": "100000"}}}' --from ${TEST_WALLET} --gas 50000000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
-RES=$(neutrond q tx $(echo $RES_1 | jq -r '.txhash') --output json)
+# execute_contract $ASTROPORT_POOL_CONTRACT_ADDRESS  '{"swap": {"offer_asset": {"info": {"native_token": {"denom": "untrn"}}, "amount": "100000"}}}' $TEST_WALLET
+BEFORE_AMOUNT=$(neutrond q bank balances $TEST_WALLET_ADDRESS --node $NODE --output json)
+RES_1=$(neutrond tx wasm execute ${ASTROPORT_POOL_CONTRACT_ADDRESS} '{"swap": {"offer_asset": {"info": {"native_token": {"denom": "untrn"}}, "amount": "100000"}}}' --from ${TEST_WALLET} --gas 500000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
+RES=$(neutrond q tx $(echo $RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo $RES | jq -r '.raw_log'
 
 ## ==== Check balance on test wallet (should include swapped asset)
 TEST_WALLET_ADDRESS=$(neutrond keys show $TEST_WALLET --keyring-backend test --output json | jq -r '.address')
 RES=$(neutrond q bank balances $TEST_WALLET_ADDRESS --node $NODE --output json)
 echo "Test wallet balances: $RES"
+AFTER_AMOUNT=$(neutrond q bank balances $TEST_WALLET_ADDRESS --node $NODE --output json)
+echo "BEFORE: $BEFORE_AMOUNT, AFTER: $AFTER_AMOUNT"
 
 # ===== IBC transfer (requires ibc_setup.sh to be complete)
 
 ## ==== Make IBC transfer from CLI
-RES_1=$(neutrond tx ibc-transfer transfer "transfer" $TRANSFER_CHANNEL_ID $TRANSFER_DESTINATION "55untrn"  --from ${TEST_WALLET} --gas 5000000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE})
+RES_1=$(neutrond tx ibc-transfer transfer "transfer" $TRANSFER_CHANNEL_ID $TRANSFER_DESTINATION "10000untrn"  --from ${TEST_WALLET} --gas 5000000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE})
 RES=$(neutrond q tx $(echo $RES_1 | jq -r '.txhash') --output json --node $NODE)
 gaiad q bank balances $TRANSFER_DESTINATION --node $TRANSFER_DESTINATION_NODE
-neutrond q bank balances neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6 --node $NODE
+neutrond q bank balances $TEST_WALLET_ADDRESS --node $NODE
 
 ## ==== Make IBC transfer from contract (requires ibc_transfer contract)
 
 ### Send money to ibc transfer contract
-SEND_RES_1=$(neutrond tx bank send $TEST_WALLET ${IBC_TRANSFER_ADDRESS} 5000000untrn  --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=block -y --output json)
+SEND_RES_1=$(neutrond tx bank send $TEST_WALLET ${IBC_TRANSFER_ADDRESS} 5000000untrn  --gas-prices ${GAS_PRICES} --chain-id ${CHAINID} --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --broadcast-mode=sync -y --output json)
 echo $SEND_RES_1
 SEND_RES=$(neutrond q tx $(echo $SEND_RES_1 | jq -r '.txhash') --output json --node $NODE)
 CONTRACT_BALANCES=$(neutrond q bank balances $IBC_TRANSFER_ADDRESS --node $NODE --output json)
@@ -98,13 +101,13 @@ echo "IBC transfer contract balance: ${CONTRACT_BALANCES}"
 
 ### Set ibc fee
 SET_IBC_FEE_MSG='{"set_fees": {"recv_fee": "0", "ack_fee": "200000", "timeout_fee": "200000", "denom": "untrn"}}'
-SET_IBC_FEE_RES_1=$(neutrond tx wasm execute $IBC_TRANSFER_ADDRESS $SET_IBC_FEE_MSG --from ${TEST_WALLET_2} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE})
+SET_IBC_FEE_RES_1=$(neutrond tx wasm execute $IBC_TRANSFER_ADDRESS $SET_IBC_FEE_MSG --from ${TEST_WALLET_2} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE})
 SET_IBC_FEE_RES=$(neutrond q tx $(echo $SET_IBC_FEE_RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo $SET_IBC_FEE_RES | jq -r '.raw_log'
 
 ### Executing ibc transfer
 IBC_TRANSFER_MSG='{"send": {"channel": "'"$TRANSFER_CHANNEL_ID"'", "to": "'"$TRANSFER_DESTINATION"'", "denom": "untrn", "amount": "100007"}}'
-IBC_TRANSFER_RES_1=$(neutrond tx wasm execute $IBC_TRANSFER_ADDRESS $IBC_TRANSFER_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
+IBC_TRANSFER_RES_1=$(neutrond tx wasm execute $IBC_TRANSFER_ADDRESS $IBC_TRANSFER_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
 IBC_TRANSFER_RES=$(neutrond q tx $(echo $IBC_TRANSFER_RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo $IBC_TRANSFER_RES_1 | jq -r '.raw_log'
 gaiad q bank balances $TRANSFER_DESTINATION --node $TRANSFER_DESTINATION_NODE
@@ -116,7 +119,7 @@ gaiad q ibc-transfer denom-trace TODO_IBC_DENOM --node $TRANSFER_DESTINATION_NOD
 ### Executing register ICA
 INFO='{"connection_id": "'"$ICA_CONNECTION_ID"'", "interchain_account_id": "test2"}'
 REGISTER_ICA_MSG='{"register": '"$INFO"'}'
-REGISTER_ICA_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $REGISTER_ICA_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
+REGISTER_ICA_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $REGISTER_ICA_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
 REGISTER_ICA_RES=$(neutrond q tx $(echo $REGISTER_ICA_RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo "Register ICA RES: $REGISTER_ICA_RES"
 
@@ -134,14 +137,14 @@ gaiad q bank balances $ICA_ADDRESS --node $ICA_NODE
 
 ### Set ibc fees for interchaintxs contract
 SET_IBC_FEE_MSG='{"set_fees": {"recv_fee": "0", "ack_fee": "200000", "timeout_fee": "200000", "denom": "untrn"}}'
-SET_IBC_FEE_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $SET_IBC_FEE_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
+SET_IBC_FEE_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $SET_IBC_FEE_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "100000untrn")
 SET_IBC_FEE_RES=$(neutrond q tx $(echo $SET_IBC_FEE_RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo $SET_IBC_FEE_RES | jq -r '.raw_log'
 
 ### Executing delegate
 INFO='{"interchain_account_id": "test2", "validator": "'"$VALIDATOR_ADDR"'", "amount": "50000", "denom": "uatom"}'
 DELEGATE_ICA_MSG='{"delegate": '"$INFO"'}'
-DELEGATE_ICA_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $DELEGATE_ICA_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=block --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "400000untrn")
+DELEGATE_ICA_RES_1=$(neutrond tx wasm execute $NEUTRON_INTERCHAIN_TXS_ADDRESS $DELEGATE_ICA_MSG --from ${TEST_WALLET} --gas 700000 --chain-id ${CHAINID} --broadcast-mode=sync --gas-prices ${GAS_PRICES}  -y --output json --keyring-backend test --home ${KEYS_HOME} --node ${NODE} --amount "400000untrn")
 DELEGATE_ICA_RES=$(neutrond q tx $(echo $DELEGATE_ICA_RES_1 | jq -r '.txhash') --output json --node $NODE)
 echo "DELEGATE_ICA_RES: $DELEGATE_ICA_RES"
 

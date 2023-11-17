@@ -8,8 +8,8 @@ import { StdFee } from '@cosmjs/amino';
 
 // ========= CONFIG =========
 
-const NEUTRON_NODE_RPC_ADDR = 'http://127.0.0.1:26657';
-const NEUTRON_NODE_REST_ADDR = 'http://127.0.0.1:1317';
+const NEUTRON_NODE_RPC_ADDR = 'http://37.27.55.151:26657';
+const NEUTRON_NODE_REST_ADDR = 'http://37.27.55.151:1317';
 const IBC_UATOM_DENOM = 'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9';
 const IBC_USDC_DENOM = 'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349';
 
@@ -21,7 +21,7 @@ const EXPECTED_IBC_USDC_MIN_FEE = '0.250000000000000000';
 
 const UNTRN_DENOM = 'untrn';
 const WALLET_MNEMONIC =
-  'banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass';
+  'leopard exclude more together bottom face flight elder trash mushroom hidden win demand fog bubble mosquito capital list dress dwarf erosion puzzle lobster clap';
 
 describe('Globalfee module', () => {
   const context: {

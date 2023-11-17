@@ -7,8 +7,8 @@ import { GasPrice } from '@cosmjs/stargate';
 
 // ========= CONFIG =========
 
-const NEUTRON_NODE_RPC_ADDR = 'http://127.0.0.1:26657';
-const NEUTRON_NODE_REST_ADDR = 'http://127.0.0.1:1317';
+const NEUTRON_NODE_RPC_ADDR = 'http://37.27.55.151:26657';
+const NEUTRON_NODE_REST_ADDR = 'http://37.27.55.151:1317';
 
 const PREPARATION_BOND_AMOUNT = '1_000_000'; // how much will be bonded by the wallet to the Neutron DAO
 
@@ -27,7 +27,7 @@ const NEUTRON_VAULT_CONTRACT = 'neutron1qeyjez6a9dwlghf9d6cy44fxmsajztw257586akk
 const PROPOSAL_CONTRACT = 'neutron1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgshlt6zh';
 const PRE_PROPOSE_CONTRACT = 'neutron1hulx7cgvpfcvg83wk5h96sedqgn72n026w6nl47uht554xhvj9nsgs8v0z';
 const WALLET_MNEMONIC =
-    'banner spread envelope side kite person disagree path silver will brother under couch edit food venture squirrel civil budget number acquire point work mass';
+    'leopard exclude more together bottom face flight elder trash mushroom hidden win demand fog bubble mosquito capital list dress dwarf erosion puzzle lobster clap';
 
 describe('Governance', () => {
     const context: {
@@ -104,9 +104,9 @@ describe('Governance', () => {
                         },
                     },
                 },
-                'auto',
+                1.5,
                 undefined,
-                [{ amount: '1000', denom: UNTRN_DENOM }],
+                [{ amount: '1000000000', denom: UNTRN_DENOM }],
             );
 
             const attribute = getEventAttribute(
@@ -124,7 +124,7 @@ describe('Governance', () => {
                 walletAddr,
                 PROPOSAL_CONTRACT,
                 { vote: { proposal_id: proposalId, vote: 'yes' } },
-                'auto',
+                1.5,
                 undefined,
             );
         });
@@ -142,7 +142,7 @@ describe('Governance', () => {
                 walletAddr,
                 PROPOSAL_CONTRACT,
                 { execute: { proposal_id: proposalId } },
-                'auto',
+                1.5,
                 undefined,
             );
         });
@@ -193,9 +193,9 @@ describe('Governance', () => {
                         },
                     },
                 },
-                'auto',
+                1.5,
                 undefined,
-                [{ amount: '1000', denom: UNTRN_DENOM }],
+                [{ amount: '1000000000', denom: UNTRN_DENOM }],
             );
 
             const attribute = getEventAttribute(
@@ -213,7 +213,7 @@ describe('Governance', () => {
                 walletAddr,
                 PROPOSAL_CONTRACT,
                 { vote: { proposal_id: proposalId, vote: 'yes' } },
-                'auto',
+                1.5,
                 undefined,
             );
         });
@@ -231,7 +231,7 @@ describe('Governance', () => {
                 walletAddr,
                 PROPOSAL_CONTRACT,
                 { execute: { proposal_id: proposalId } },
-                'auto',
+                1.5,
                 undefined,
             );
         });
