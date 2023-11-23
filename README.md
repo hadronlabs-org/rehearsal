@@ -44,6 +44,14 @@ This approach strengthens trust in the blockchain community and helps in prevent
 
 By familiarizing yourself with this directory structure, you can navigate and modify the project more effectively.
 
+## Using CLI
+
+In case you need to send transaction using CLI from the name of any account, you need to: 
+1. Create transaction using `--offline` flag. Eg. `neutron tx bank send <account you have private key for> neutron1f6s4550dzyu0yzp7q2acn47mp5u25k0xa96pqy 5000000untrn --offline`;
+2. Sign this transaction with `neutrond tx sign tx-ex.json --chain-id pion-1 --from <account used in previous step>`;
+3. Replace `from_address` in the `/cosmos.bank.v1beta1.MsgSend` message to the address from which you actually want to send funds;
+4. Broadcast this transaction to the forked network using `neutrond tx broadcast`.
+
 ## Integration Tests
 
 This repository is designed to craft integration tests that evaluate the behavior of different parts of the system, especially the execution of network proposals. Tests are written using the `vitest` framework.
