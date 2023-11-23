@@ -1,6 +1,8 @@
 # Neutron Mainnet Fork with integration tests
 
-This repository provides utilities to automate the creation and execution of a mainnet fork for the Neutron network, facilitating integration tests. With the rapid changes in the blockchain landscape, preliminary testing is crucial. Forking the mainnet allows developers to rigorously test contracts, modules, and other functionalities in an environment that mirrors the current mainnet.
+This repository provides utilities to automate the creation and execution of a mainnet fork for the Neutron network, facilitating integration tests. With the rapid changes in the blockchain landscape, preliminary testing is crucial. Forking the mainnet allows developers to rigorously test contracts, modules, and other functionalities in an environment that mirrors the current mainnet. 
+
+Note ‼️: The fork is using neutron image with disabled signature verification, so you can send transactions on behalf of any account. This is done to simplify testing process. Please do not use this fork for any other purposes. Testing scripts has a [helper](https://github.com/hadronlabs-org/rehearsal/blob/main/src/libs/wallet.ts#L3) to allow you to send transactions on behalf of any account.
 
 # Hardware Requirements
 
@@ -41,6 +43,14 @@ This approach strengthens trust in the blockchain community and helps in prevent
 - **`./snapshot` Directory:** This directory contains latest snapshot that was made using `make create-mainnet-snapshot` command, please leave it intact.
 
 By familiarizing yourself with this directory structure, you can navigate and modify the project more effectively.
+
+## Using CLI
+
+In case you need to send transaction using CLI from the name of any account, you need to: 
+1. Create transaction using `--offline` flag. Eg. `neutron tx bank send <account you have private key for> neutron1f6s4550dzyu0yzp7q2acn47mp5u25k0xa96pqy 5000000untrn --offline`;
+2. Sign this transaction with `neutrond tx sign tx-ex.json --chain-id pion-1 --from <account used in previous step>`;
+3. Replace `from_address` in the `/cosmos.bank.v1beta1.MsgSend` message to the address from which you actually want to send funds;
+4. Broadcast this transaction to the forked network using `neutrond tx broadcast`.
 
 ## Integration Tests
 
