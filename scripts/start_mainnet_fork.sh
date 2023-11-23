@@ -56,7 +56,12 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     fi
 
     crudini --set /opt/neutron/data/config/app.toml api enable true
+    crudini --set /opt/neutron/data/config/app.toml api swagger true
+    crudini --set /opt/neutron/data/config/app.toml api enabled-unsafe-cors true
+    crudini --set /opt/neutron/data/config/app.toml grpc-web enable-unsafe-cors true
     sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/neutron/data/config/app.toml
+
+    crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]    
 
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
