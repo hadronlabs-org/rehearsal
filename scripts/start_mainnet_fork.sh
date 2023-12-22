@@ -60,6 +60,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     crudini --set /opt/neutron/data/config/app.toml api enabled-unsafe-cors true
     crudini --set /opt/neutron/data/config/app.toml grpc-web enable-unsafe-cors true
     sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/neutron/data/config/app.toml
+    sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
 
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]    
 

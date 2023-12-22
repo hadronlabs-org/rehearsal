@@ -21,6 +21,9 @@ export NEUTROND_P2P_SEEDS
 
 mkdir /opt/neutron/logs -p
 
+sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/neutron/data/config/app.toml
+sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
+
 neutrond start --home /opt/neutron/data &
 
 NEUTRON_PID=$(echo $!)
