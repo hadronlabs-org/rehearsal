@@ -89,6 +89,8 @@ Make sure to set these variables appropriately in the `docker-compose.yml` befor
      Which internally runs `neutrond export`. This command will take a while (about an hour) until it will prepare mainnet snapshot and put it into **`./snapshot`** directory.
 
      > **Please aware that this is long operation and can take at least 20 minutes, dependently on your hardware performance.**
+     > **But there is no need to create snapshot by yourself, because there is [special snapshot service](https://snapshot.neutron.org/) which creates raw snapshots every 6 hours, and these snapshots can be downloaded automatically with `make create-mainnet-snapshot` command**
+     > **if `./snapshot` directory is empty.**
 
 2. **Starting, Stopping and Managing the Snapshot and Fork**
    - For detailed steps on snapshot management and launching your fork, refer to the commands section below.
@@ -128,6 +130,9 @@ Users have the flexibility to integrate their own settings into the genesis. Thi
 
 This approach provides a seamless way to tailor the genesis to specific requirements or configurations while maintaining the integrity of the original setup. Ensure the `custom.sh` script has appropriate permissions to execute and handle the genesis files.
 
+## Docker container
+
+Instead of building docker container from sources you can use docker container [from docker hub](https://hub.docker.com/r/neutronorg/rehearsal).
 
 ## Commands
 
