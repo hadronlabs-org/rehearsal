@@ -7,6 +7,10 @@
   "repository": "git@github.com:neutron-org/mainnet-fork-tests.git",
   "scripts": {
     "test": "vitest --run",
+    "test:globalfee": "vitest --bail 1 --run src/testcases/globalfee",
+    "test:parameters_change_bindings": "vitest --bail 1 --run src/testcases/parameters_change_bindings",
+    "test:governance": "vitest --bail 1 --run src/testcases/governance",
+    "test:ibc_hooks": "vitest --bail 1 --run src/testcases/ibc_hooks",
     "watch": "vitest",
     "build-ts-client": "ts-node ./src/rebuild-client.ts",
     "lint": "eslint src/**/*.ts",
@@ -24,6 +28,7 @@
     "@cosmjs/stargate": "^0.31.0",
     "@neutron-org/client-ts": "^1.4.0",
     "@neutron-org/contracts2ts": "^1.3.1",
+    "@neutron-org/neutronjsplus": "^0.0.16-pcl-migration",
     "eslint-config-prettier": "^8.8.0",
     "husky": "^8.0.3",
     "ts-node": "^10.9.1",

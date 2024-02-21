@@ -18,10 +18,9 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
     environment:
-      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      - MAIN_WALLET=neutron1m9l358xunhhwds0568za49mzhvuxx9ux8xafx2
     ports:
       - 1317:1317
       - 26657:26657
       - 26656:26656
       - 9090:9090
-
