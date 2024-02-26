@@ -15,7 +15,7 @@ SINGLE_PROPOSAL_CONFIG='{
   "min_voting_period": null,
   "allow_revoting": false,
   "dao": "neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff",
-  "close_proposal_on_execution_failure": false
+  "close_proposal_on_execution_failure": true
 }'
 
 echo "Applying single proposal contract custom config: $SINGLE_PROPOSAL_CONFIG"

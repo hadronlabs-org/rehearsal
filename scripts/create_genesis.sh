@@ -16,7 +16,6 @@ jq \
     'del(.validators) | 
     .app_state.adminmodule.admins += [$admin_account] |
     .app_state.ibc.client_genesis.params.allowed_clients += ["06-solomachine","07-tendermint","09-localhost"] |
-    .app_state.wasm.sequences[1].value = $sequence |
-    .consensus_params.block.max_gas = "1000000000"
+    .app_state.wasm.sequences[1].value = $sequence
     ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
 
