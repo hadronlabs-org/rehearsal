@@ -1,5 +1,7 @@
 # Neutron Mainnet Fork with integration tests
 
+**Neutron node version:** v3.0.2
+
 This repository provides utilities to automate the creation and execution of a mainnet fork for the Neutron network, facilitating integration tests. With the rapid changes in the blockchain landscape, preliminary testing is crucial. Forking the mainnet allows developers to rigorously test contracts, modules, and other functionalities in an environment that mirrors the current mainnet. 
 
 Note ‼️: The fork is using neutron image with disabled signature verification, so you can send transactions on behalf of any account. This is done to simplify testing process. Please do not use this fork for any other purposes. Testing scripts has a [helper](https://github.com/hadronlabs-org/rehearsal/blob/main/src/libs/wallet.ts#L3) to allow you to send transactions on behalf of any account.
