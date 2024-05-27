@@ -20,7 +20,7 @@ EXPOSE 26656 26657 1317 9090
 # RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/data
 
 RUN cp /go/bin/neutrond /go/bin/neutrond_new
-COPY --from=old_neutron ./config/config.toml /opt/neutron/data/config/config.toml
+COPY ./config/config.toml /opt/neutron/data/config/config.toml
 COPY --chmod=0755 ./scripts/create_genesis.sh /opt/neutron/create_genesis.sh
 COPY --chmod=0755 ./scripts/start_mainnet_fork.sh /opt/neutron/start_mainnet_fork.sh
 COPY --chmod=0755 ./scripts/start_upgraded_neutron.sh /opt/neutron/start_upgraded_neutron.sh
