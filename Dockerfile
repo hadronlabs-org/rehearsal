@@ -23,7 +23,7 @@ RUN cp /go/bin/neutrond /go/bin/neutrond_new
 COPY --from=old_neutron ./config/config.toml /opt/neutron/data/config/config.toml
 COPY --from=old_neutron --chmod=0755 ./scripts/create_genesis.sh /opt/neutron/create_genesis.sh
 COPY --from=old_neutron --chmod=0755 ./scripts/start_mainnet_fork.sh /opt/neutron/start_mainnet_fork.sh
-COPY --from=old_neutron --chmod=0755 ./scripts/new_neutron_start.sh /opt/neutron/new_neutron_start.sh
+COPY --from=old_neutron --chmod=0755 ./scripts/start_upgraded_neutron.sh /opt/neutron/start_upgraded_neutron.sh
 COPY --from=old_neutron /go/bin/neutrond /go/bin/neutrond
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \
