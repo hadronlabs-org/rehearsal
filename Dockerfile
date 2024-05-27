@@ -24,6 +24,7 @@ COPY ./config/config.toml /opt/neutron/data/config/config.toml
 COPY --chmod=0755 ./scripts/create_genesis.sh /opt/neutron/create_genesis.sh
 COPY --chmod=0755 ./scripts/start_mainnet_fork.sh /opt/neutron/start_mainnet_fork.sh
 COPY --chmod=0755 ./scripts/start_upgraded_neutron.sh /opt/neutron/start_upgraded_neutron.sh
+COPY --chmod=0755 ./peers.json /opt/neutron/peers.json
 COPY --from=old_neutron /go/bin/neutrond /go/bin/neutrond
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \

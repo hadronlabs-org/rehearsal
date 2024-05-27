@@ -1,2 +1,4 @@
 node_modules/
 snapshot/
+vals/
+peers.json
