@@ -12,6 +12,7 @@ RUN make install-test-binary
 FROM golang:1.22-bullseye as new_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
 RUN git clone --branch feat/sdk-50 https://github.com/neutron-org/neutron.git /opt/neutron
+WORKDIR /opt/neutron
 
 RUN make install-test-binary
 
