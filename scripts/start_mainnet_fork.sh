@@ -38,6 +38,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
+    echo "Adding consumer section"
     neutrond add-consumer-section --home /opt/neutron/data --validator=$VALIDATOR
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
 

@@ -17,7 +17,7 @@ services:
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
-      - ./vals/:/opt/neutron/vals
+      # - ./vals/:/opt/neutron/vals
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a # TODO: change for each new val

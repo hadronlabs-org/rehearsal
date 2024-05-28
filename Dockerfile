@@ -17,7 +17,14 @@ WORKDIR /opt/neutron
 RUN make install-test-binary
 
 EXPOSE 26656 26657 1317 9090
-# RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/data
+
+ENV VALIDATOR ""
+
+COPY ./vals/ /opt/neutron/vals/
+COPY ./vals/val_a /opt/neutron/data
+
+ENV LD_LIBRARY_PATH "/opt/neutron"
+ADD ["https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so","https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.aarch64.so","/lib/"]
 
 RUN cp /go/bin/neutrond /go/bin/neutrond_new
 COPY ./config/config.toml /opt/neutron/data/config/config.toml
