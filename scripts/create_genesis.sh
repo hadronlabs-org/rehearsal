@@ -13,7 +13,7 @@ WASM_SEQUENCES=$((WASM_SEQUENCES + 1))
 jq \
     --arg sequence "$WASM_SEQUENCES" \
     --arg admin_account "$MAIN_WALLET" \
-    'del(.validators) | 
+    'del(.validators) |
     .app_state.adminmodule.admins += [$admin_account] |
     .app_state.ibc.client_genesis.params.allowed_clients += ["06-solomachine","07-tendermint","09-localhost"] |
     .app_state.wasm.sequences[1].value = $sequence

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# ==== old neutron ====
+# ==== neutron 3.0.5 ====
 FROM golang:1.21-bullseye as old_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
 RUN git clone --branch feat/v4-upgrade-devnet https://github.com/neutron-org/neutron.git /opt/neutron
@@ -8,7 +8,7 @@ WORKDIR /opt/neutron
 
 RUN make install-test-binary
 
-# ==== new neutron ====
+# ==== neutron 4.0.0 ====
 FROM golang:1.22-bullseye as new_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
 RUN git clone --branch feat/sdk-50 https://github.com/neutron-org/neutron.git /opt/neutron
@@ -18,10 +18,10 @@ RUN make install-test-binary
 
 EXPOSE 26656 26657 1317 9090
 
-ENV VALIDATOR ""
+ENV VALIDATOR "val_a"
 
 COPY ./vals/ /opt/neutron/vals/
-COPY ./vals/val_a /opt/neutron/data
+COPY ./vals/${VALIDATOR} /opt/neutron/data
 
 ENV LD_LIBRARY_PATH "/opt/neutron"
 ADD ["https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so","https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.aarch64.so","/lib/"]
