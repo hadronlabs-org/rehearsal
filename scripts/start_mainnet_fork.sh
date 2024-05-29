@@ -68,6 +68,7 @@ if [ "$FIRST_RUN" = "true" ]; then
     sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
 
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]
+    crudini --set /opt/neutron/data/config/config.toml p2p pex false
 
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
