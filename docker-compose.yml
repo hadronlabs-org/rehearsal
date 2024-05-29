@@ -17,11 +17,46 @@ services:
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
+      - ./current_data:/opt/neutron/data
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
-      - VALIDATOR=val_a # TODO: change for each new val
+      - VALIDATOR=val_a
+      - FIRST_RUN=true
     ports:
       - 1317:1317
       - 26657:26657
       - 26656:26656
       - 9090:9090
+  neutron-fork-continue:
+    image: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork-2
+    volumes:
+      - ./snapshot/:/opt/neutron/snapshot
+      - ./custom/:/opt/neutron/custom
+      - ./current_data:/opt/neutron/data
+    environment:
+      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      - VALIDATOR=val_a
+      - FIRST_RUN=false
+    ports:
+      - 1317:1317
+      - 26657:26657
+      - 26656:26656
+      - 9090:9090
+  neutron-fork-upgrade:
+    image: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork-3
+    volumes:
+      - ./snapshot/:/opt/neutron/snapshot
+      - ./custom/:/opt/neutron/custom
+      - ./current_data:/opt/neutron/data
+    environment:
+      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      - VALIDATOR=val_a
+      - FIRST_RUN=false
+    ports:
+      - 1317:1317
+      - 26657:26657
+      - 26656:26656
+      - 9090:9090
+    command: bash /opt/neutron/start_upgraded_neutron.sh

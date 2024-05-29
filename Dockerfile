@@ -18,10 +18,11 @@ RUN make install-test-binary
 
 EXPOSE 26656 26657 1317 9090
 
-ENV VALIDATOR "val_a"
+ARG validator
+ENV VALIDATOR=$validator
 
 COPY ./vals/ /opt/neutron/vals/
-COPY ./vals/${VALIDATOR} /opt/neutron/data
+COPY ./vals/${VALIDATOR} /opt/neutron/initial_data
 
 ENV LD_LIBRARY_PATH "/opt/neutron"
 ADD ["https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so","https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.aarch64.so","/lib/"]

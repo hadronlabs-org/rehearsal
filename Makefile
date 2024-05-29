@@ -7,7 +7,7 @@ build-mainnet-snapshot-image:
 	@docker buildx build --load -t neutron-mainnet-snapshot -f Dockerfile.snapshot .
 
 build-mainnet-fork-image:
-	@docker buildx build --no-cache --load -t neutron-mainnet-fork .
+	@docker buildx build  --build-arg validator=val_a --no-cache --load -t neutron-mainnet-fork .
 
 create-mainnet-snapshot:
 	@mkdir -p ./snapshot
@@ -18,6 +18,12 @@ start-mainnet-fork:
 	@mkdir -p ./snapshot
 	@chmod 0777 ./snapshot
 	@$(COMPOSE) up neutron-fork
+
+continue-mainnet-fork:
+	@$(COMPOSE) up neutron-fork-continue
+
+upgrade-mainnet-fork:
+	@$(COMPOSE) up neutron-fork-upgrade
 
 stop-mainnet-snapshot:
 	@docker stop neutron-mainnet-snapshot
