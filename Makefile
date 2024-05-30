@@ -30,3 +30,4 @@ stop-mainnet-snapshot:
 
 stop-mainnet-fork:
 	@docker stop neutron-mainnet-fork
+	@docker stop neutron-mainnet-fork-2

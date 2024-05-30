@@ -5,7 +5,7 @@ SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
 if [ "$FIRST_RUN" = "true" ]; then
     echo "Copying into data initial state"
-    cp -r /opt/neutron/initial_data /opt/neutron/data
+    cp -r /opt/neutron/initial_data/* /opt/neutron/data
     neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
     echo "Previous state backup not found, starting from genesis..."
@@ -27,7 +27,7 @@ if [ "$FIRST_RUN" = "true" ]; then
         if ! echo $METADATA | jq -e 'has("snapshot_path")' > /dev/null; then
             echo "Wrong metadata file type, aborting..."
             exit 1
-        fi        
+        fi
 
         SNAPSHOT_ARCHIVE=$(echo "$METADATA" | jq -r .snapshot_path)
         SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
