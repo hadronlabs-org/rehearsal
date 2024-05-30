@@ -41,9 +41,15 @@ if [ "$FIRST_RUN" = "true" ]; then
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
+    echo "Genesis after creating:"
+    echo $(sha256sum $GENESIS_OUTPUT)
     echo "Adding consumer section"
     neutrond add-consumer-section --home /opt/neutron/data --validator=$VALIDATOR
+    echo "Genesis after adding consumer section:"
+    echo $(sha256sum $GENESIS_OUTPUT)
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+    echo "Genesis after adding genesis account:"
+    echo $(sha256sum $GENESIS_OUTPUT)
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."
