@@ -5,6 +5,7 @@ SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
 if [ "$FIRST_RUN" = "true" ]; then
     echo "Copying into data initial state"
+    rm -rf /opt/neutron/data
     mv /opt/neutron/initial_data /opt/neutron/data
     neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
