@@ -11,7 +11,7 @@ if [ "$FIRST_RUN" = "true" ]; then
 
     if [ "$GENERATE_GENESIS" = "false" ]; then
         echo "DO NOT generate genesis, starting from copied one"
-        cp /opt/neutron/genesis /opt/neutron/data/config/genesis.json
+        cp /opt/neutron/genesis/genesis.json /opt/neutron/data/config/genesis.json
         echo "Genesis copied"
     fi
 
