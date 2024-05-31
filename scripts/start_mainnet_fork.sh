@@ -87,6 +87,7 @@ if [ "$FIRST_RUN" = "true" ]; then
     sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
 
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]
+    crudini --set /opt/neutron/data/config/config.toml rpc laddr "\"tcp://0.0.0.0:26657\""
     crudini --set /opt/neutron/data/config/config.toml p2p pex false
 
     PEERS=$(cat /opt/neutron/peers.json | jq 'map(.[1])' | jq 'join(",")')
