@@ -22,11 +22,32 @@ services:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a
       - FIRST_RUN=true
+      - GENERATE_GENESIS=true
     ports:
       - 1317:1317
       - 26657:26657
       - 26656:26656
       - 9090:9090
+
+  neutron-fork-genesis:
+    image: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork-3
+    volumes:
+      - ./snapshot/:/opt/neutron/snapshot
+      - ./custom/:/opt/neutron/custom
+      - ./current_data:/opt/neutron/data
+      - ./genesis:/opt/neutron/genesis
+    environment:
+      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      - VALIDATOR=val_a
+      - FIRST_RUN=true
+      - GENERATE_GENESIS=false
+    ports:
+      - 1317:1317
+      - 26657:26657
+      - 26656:26656
+      - 9090:9090
+
   neutron-fork-continue:
     image: neutron-mainnet-fork
     container_name: neutron-mainnet-fork-2

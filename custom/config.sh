@@ -32,4 +32,3 @@ jq \
         else . 
         end)
     ' $INPUT_GENESIS_FILE > $OUTPUT_GENESIS_FILE
-
