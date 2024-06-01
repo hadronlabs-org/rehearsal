@@ -66,7 +66,7 @@ services:
       - 9090:9090
   neutron-fork-upgrade:
     image: neutron-mainnet-fork
-    container_name: neutron-mainnet-fork-3
+    container_name: neutron-mainnet-fork-4
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom

@@ -118,7 +118,7 @@ if [ "$FIRST_RUN" = "true" ]; then
         sleep 15
     done
 
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
 fi
 
 if [ "$FIRST_RUN" = "false" ]; then

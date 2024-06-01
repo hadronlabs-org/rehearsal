@@ -35,6 +35,7 @@ COPY --chmod=0755 ./scripts/start_upgraded_neutron.sh /opt/neutron/start_upgrade
 COPY --chmod=0755 ./peers.json /opt/neutron/peers.json
 COPY --from=old_neutron /go/bin/neutrond /go/bin/neutrond
 
+# TODO curl -f http://127.0.0.1:26657/block
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \
     curl -f http://127.0.0.1:1317/blocks/1 >/dev/null 2>&1 || exit 1
 
