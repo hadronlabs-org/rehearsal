@@ -4,3 +4,4 @@ vals/
 peers.json
 current_data/
 genesis/
+old_genesis/

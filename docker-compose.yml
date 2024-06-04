@@ -81,3 +81,16 @@ services:
       - 26656:26656
       - 9090:9090
     command: bash /opt/neutron/start_upgraded_neutron.sh
+
+  oracle:
+    image: skip-mev/slinky-e2e-oracle
+    entrypoint: [
+      "slinky",
+      "--oracle-config-path",
+      "/oracle/oracle.json",
+      "--market-config-path",
+      "/oracle/market.json",
+      ]
+    ports:
+      - "8080:8080" # main oracle port
+      - "8002:8002" # oracle metrics port

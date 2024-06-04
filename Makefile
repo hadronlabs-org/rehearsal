@@ -24,3 +24,9 @@ upgrade-mainnet-fork:
 stop-mainnet-fork:
 	@docker stop neutron-mainnet-fork
 	@docker stop neutron-mainnet-fork-2
+
+build-slinky:
+		@docker buildx build --load --build-context app=../slinky -t skip-mev/slinky-e2e-oracle -f ./Dockerfile.slinky .
+
+start-slinky:
+	@$(COMPOSE) up oracle -d
