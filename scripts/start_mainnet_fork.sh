@@ -83,12 +83,14 @@ if [ "$FIRST_RUN" = "true" ]; then
     crudini --set /opt/neutron/data/config/app.toml api address "\"tcp://0.0.0.0:1317\""
     crudini --set /opt/neutron/data/config/app.toml api enabled-unsafe-cors true
     crudini --set /opt/neutron/data/config/app.toml grpc-web enable-unsafe-cors true
+    crudini --set /opt/neutron/data/config/app.toml telemetry enabled true
     sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/neutron/data/config/app.toml
     sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
 
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]
     crudini --set /opt/neutron/data/config/config.toml rpc laddr "\"tcp://0.0.0.0:26657\""
     crudini --set /opt/neutron/data/config/config.toml p2p pex false
+    crudini --set /opt/neutron/data/config/config.toml instrumentation prometheus true
 
     PEERS=$(cat /opt/neutron/peers.json | jq 'map(.[1])' | jq 'join(",")')
     crudini --set /opt/neutron/data/config/config.toml p2p seeds $PEERS
@@ -125,5 +127,5 @@ if [ "$FIRST_RUN" = "false" ]; then
     echo "Starting neutron using existing data..."
     # cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
     # cp -r /opt/neutron/data_backup/wasm/* /opt/neutron/data/wasm/
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
 fi
