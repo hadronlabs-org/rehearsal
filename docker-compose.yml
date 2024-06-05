@@ -92,8 +92,8 @@ services:
       "slinky",
       "--oracle-config-path",
       "/oracle/oracle.json",
-      "--market-config-path",
-      "/oracle/market.json",
+      # "--market-config-path",
+      # "/oracle/market.json",
       ]
     ports:
       - "8080:8080" # main oracle port
