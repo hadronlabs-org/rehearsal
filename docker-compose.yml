@@ -67,6 +67,7 @@ services:
       - 26656:26656
       - 9090:9090
       - 26660:26660
+
   neutron-fork-upgrade:
     image: neutron-mainnet-fork
     container_name: neutron-mainnet-fork-4
