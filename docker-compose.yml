@@ -18,6 +18,7 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
       - ./current_data:/opt/neutron/data
+      - ./store_logs:/opt/neutron/store_logs
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a
@@ -38,6 +39,7 @@ services:
       - ./custom/:/opt/neutron/custom
       - ./current_data:/opt/neutron/data
       - ./genesis:/opt/neutron/genesis
+      - ./store_logs:/opt/neutron/store_logs
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a
@@ -57,6 +59,7 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
       - ./current_data:/opt/neutron/data
+      - ./store_logs:/opt/neutron/store_logs
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a
@@ -75,6 +78,7 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
       - ./current_data:/opt/neutron/data
+      - ./store_logs:/opt/neutron/store_logs
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
       - VALIDATOR=val_a
@@ -93,8 +97,6 @@ services:
       "slinky",
       "--oracle-config-path",
       "/oracle/oracle.json",
-      # "--market-config-path",
-      # "/oracle/market.json",
       ]
     ports:
       - "8080:8080" # main oracle port

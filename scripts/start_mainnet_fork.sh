@@ -98,7 +98,7 @@ if [ "$FIRST_RUN" = "true" ]; then
     echo "Set persistent peers with $PEERS"
 
     echo "Starting neutron..."
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace-store /opt/neutron/store_logs/storelog.log &
     NEUTRON_PID=$(echo $!)
 
     echo "Neutron started with PID $NEUTRON_PID"
@@ -120,12 +120,10 @@ if [ "$FIRST_RUN" = "true" ]; then
         sleep 15
     done
 
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace-store /opt/neutron/store_logs/storelog.log
 fi
 
 if [ "$FIRST_RUN" = "false" ]; then
     echo "Starting neutron using existing data..."
-    # cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
-    # cp -r /opt/neutron/data_backup/wasm/* /opt/neutron/data/wasm/
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace-store /opt/neutron/store_logs/storelog.log
 fi
