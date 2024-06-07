@@ -5,3 +5,4 @@ peers.json
 current_data/
 genesis/
 old_genesis/
+store_logs/
