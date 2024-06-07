@@ -28,7 +28,7 @@ services:
       - 1317:1317
       - 26657:26657
       - 26656:26656
-      - 9090:9090
+      - 8090:9090
       - 26660:26660
 
   neutron-fork-genesis:
@@ -49,7 +49,7 @@ services:
       - 1317:1317
       - 26657:26657
       - 26656:26656
-      - 9090:8090
+      - 8090:9090
       - 26660:26660
 
   neutron-fork-continue:
@@ -68,7 +68,7 @@ services:
       - 1317:1317
       - 26657:26657
       - 26656:26656
-      - 9090:8090
+      - 8090:9090
       - 26660:26660
 
   neutron-fork-upgrade:
@@ -87,7 +87,7 @@ services:
       - 1317:1317
       - 26657:26657
       - 26656:26656
-      - 9090:8090
+      - 8090:9090
       - 26660:26660
     command: bash /opt/neutron/start_upgraded_neutron.sh
 
@@ -95,7 +95,7 @@ services:
     image: skip-mev/slinky-e2e-oracle
     entrypoint: [
       "slinky",
-      "--market-map-endpoint", "neutron-fork-upgrade:8090",
+      "--market-map-endpoint", "neutron-fork-upgrade:9090",
       ]
     ports:
       - "8080:8080" # main oracle port
