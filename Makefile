@@ -30,3 +30,6 @@ build-slinky:
 
 start-slinky:
 	@$(COMPOSE) up oracle -d
+
+clean_data:
+	sudo rm -rf ./current_data

@@ -92,10 +92,11 @@ services:
     command: bash /opt/neutron/start_upgraded_neutron.sh
 
   oracle:
+    network_mode: "host"
     image: skip-mev/slinky-e2e-oracle
     entrypoint: [
       "slinky",
-      "--market-map-endpoint", "neutron-fork-upgrade:9090",
+      "--market-map-endpoint", "localhost:8090",
       ]
     ports:
       - "8080:8080" # main oracle port
