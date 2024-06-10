@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
 
-# ==== neutron 3.0.5 ====
+# ==== neutron releases/v3.x ====
 FROM golang:1.21-bullseye as old_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch feat/v4-upgrade-devnet https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch releases/v3.x https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
@@ -11,7 +11,7 @@ RUN make install-test-binary
 # ==== neutron 4.0.0 ====
 FROM golang:1.22-bullseye as new_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch release_v1/nv/slinky-v1 https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch feat/sdk-50 https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary

@@ -18,7 +18,7 @@ start-mainnet-fork-from-genesis:
 continue-mainnet-fork:
 	@$(COMPOSE) up neutron-fork-continue -d
 
-upgrade-mainnet-fork:
+continue-upgraded-fork:
 	@$(COMPOSE) up neutron-fork-upgrade -d
 
 stop-mainnet-fork:
