@@ -30,6 +30,8 @@ services:
       - 26656:26656
       - 8090:9090
       - 26660:26660
+    networks:
+      - devnet_network
 
   neutron-fork-genesis:
     image: neutron-mainnet-fork
@@ -51,6 +53,8 @@ services:
       - 26656:26656
       - 8090:9090
       - 26660:26660
+    networks:
+      - devnet_network
 
   neutron-fork-continue:
     image: neutron-mainnet-fork
@@ -70,6 +74,8 @@ services:
       - 26656:26656
       - 8090:9090
       - 26660:26660
+    networks:
+      - devnet_network
 
   neutron-fork-upgrade:
     image: neutron-mainnet-fork
@@ -89,15 +95,22 @@ services:
       - 26656:26656
       - 8090:9090
       - 26660:26660
+    networks:
+      - devnet_network
     command: bash /opt/neutron/start_upgraded_neutron.sh
 
   oracle:
-    network_mode: "host"
     image: skip-mev/slinky-e2e-oracle
     entrypoint: [
       "slinky",
-      "--market-map-endpoint", "localhost:8090",
+      "--market-map-endpoint", "localhost:9090",
       ]
     ports:
       - "8080:8080" # main oracle port
       - "8002:8002" # oracle metrics port
+    networks:
+      - devnet_network
+
+networks:
+  devnet_network:
+    driver: bridge
