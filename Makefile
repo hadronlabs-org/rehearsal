@@ -35,7 +35,7 @@ clean_data:
 	sudo rm -rf ./current_data
 
 build-3-0-5-image:
-	@docker buildx build  --build-arg validator=val_a --build-arg "FROM_BRANCH=v3.0.5" --no-cache --load -t neutron-mainnet-fork .
+	@docker buildx build  --build-arg validator=val_a --build-arg "FROM_BRANCH=feat/v4-upgrade-devnet-3-0-5" --no-cache --load -t neutron-mainnet-fork .
 
 build-3-0-6-image:
-	@docker buildx build  --build-arg validator=val_a --build-arg "FROM_BRANCH=v3.0.6" --no-cache --load -t neutron-mainnet-fork .
+	@docker buildx build  --build-arg validator=val_a --build-arg "FROM_BRANCH=feat/v4-upgrade-devnet" --no-cache --load -t neutron-mainnet-fork .
