@@ -2,8 +2,12 @@
 
 # ==== neutron releases/v3.x ====
 FROM golang:1.21-bullseye as old_neutron
+
+ARG FROM_BRANCH
+RUN echo "FROM_BRANCH: ${FROM_BRANCH}"
+
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch feat/v4-upgrade-devnet https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --single-branch --branch ${FROM_BRANCH} https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
@@ -11,7 +15,7 @@ RUN make install-test-binary
 # ==== neutron 4.0.0 ====
 FROM golang:1.22-bullseye as new_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch fix/price_migration https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --single-branch --branch fix/price_migration https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
