@@ -11,7 +11,7 @@ RUN make install-test-binary
 # ==== neutron 4.0.0 ====
 FROM golang:1.22-bullseye as new_neutron
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch fix/price_migration https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch feat/whitelist-tf-hooks-no-signature https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
