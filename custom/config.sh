@@ -108,21 +108,10 @@ function add_coin() {
                             .address | contains ("'$2'")
                         ).coins = (
                             .coins | map (
-                                del (
-                                    select (
-                                        .denom | contains ("'$3'")
-                                    )
-                                )
-                            ) | map (
                                 select (
-                                    . != null
-                                )
-                            ) | . += [
-                                {
-                                    "denom": "'$3'",
-                                    "amount": "'$(echo $current_balance | jq '(.[0].amount | tonumber) + '$4'')'"
-                                }
-                            ]
+                                    .denom | contains ("'$3'")
+                                ).amount = "'$(echo $current_balance | jq '(.[].amount | tonumber) + '$4'')'"
+                            )
                         )
                     )
                 )'
@@ -174,3 +163,6 @@ jq \
         end)
     ' $INPUT_GENESIS_FILE > $OUTPUT_GENESIS_FILE
 
+genesis_config=$(cat $OUTPUT_GENESIS_FILE)
+genesis_config=$(add_coin "$genesis_config" $MAIN_WALLET "ibc/B559A80D62249C8AA07A380E2A2BEA6E5CA9A6F079C912C3A9E9B494105E4F81" "123456789")
+echo $genesis_config > $OUTPUT_GENESIS_FILE
