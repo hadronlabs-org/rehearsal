@@ -18,6 +18,147 @@ SINGLE_PROPOSAL_CONFIG='{
   "close_proposal_on_execution_failure": true
 }'
 
+function is_wallet_exists() {
+    wallet=$(echo $1 |
+            jq '.app_state.bank.balances | map (
+                    select (
+                        .address | contains ("'$2'")
+                    )
+                ) | .[]'
+            )
+    if [ -z "$wallet" ] ; then
+        echo false
+    else
+        echo true
+    fi
+}
+
+function add_wallet_if_not_exists() {
+    local new_config="$1"
+    if ! $(is_wallet_exists "$1" $2) ; then
+        new_config=$(echo $1 | jq '.app_state.bank.balances += [
+            {
+                "address": "'$2'",
+                "coins": []
+            }
+        ]')
+    fi
+    echo $new_config
+}
+
+function is_coin_exists() {
+    if ! $(is_wallet_exists "$1" $2) ; then
+        echo false
+        exit
+    fi
+
+    local amount=$(echo $1 |
+        jq '.app_state.bank.balances | map(
+                select(
+                    .address | contains ("'$2'")
+                )
+            ) | .[].coins | map(
+                select(
+                    .denom | contains ("'$3'")
+                )
+            ) | .[]'
+        )
+
+    if ! [ -z "$amount" ] ; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+function add_coin() {
+    local genesis_with_wallet=$(add_wallet_if_not_exists "$1" $2)
+    local current_balance=$(echo $genesis_with_wallet |
+        jq '.app_state.bank.balances | map(
+                select(
+                    .address | contains("'$2'")
+                )
+            ) | .[].coins | map(
+                select(
+                    .denom | contains ("'$3'")
+                )
+            )'
+        )
+    if [[ $(echo $current_balance | jq 'length') == 0 ]]; then
+        genesis_with_wallet=$(echo $genesis_with_wallet |
+            jq '.app_state.bank.balances = (.app_state.bank.balances |
+                    map (
+                        (
+                            select(
+                                .address | contains ("'$2'")
+                            ) | .coins
+                        ) += [
+                            {
+                                "denom": "'$3'",
+                                "amount": "'$4'"
+                            }
+                        ]
+                    )
+                )'
+        )
+    else
+        genesis_with_wallet=$(echo $genesis_with_wallet |
+            jq '.app_state.bank.balances = (.app_state.bank.balances | map (
+                        select (
+                            .address | contains ("'$2'")
+                        ).coins = (
+                            .coins | map (
+                                del (
+                                    select (
+                                        .denom | contains ("'$3'")
+                                    )
+                                )
+                            ) | map (
+                                select (
+                                    . != null
+                                )
+                            ) | . += [
+                                {
+                                    "denom": "'$3'",
+                                    "amount": "'$(echo $current_balance | jq '(.[0].amount | tonumber) + '$4'')'"
+                                }
+                            ]
+                        )
+                    )
+                )'
+            )
+    fi
+
+    current_supply=$(echo $genesis_with_wallet |
+        jq '.app_state.bank.supply | map (
+                select (
+                    .denom | contains ("'$3'")
+                )
+            )'
+    )
+
+    if [[ $(echo $current_supply | jq 'length') == 0 ]]; then
+        genesis_with_wallet=$(echo $genesis_with_wallet |
+            jq '.app_state.bank.supply += [
+                {
+                    "denom": "'$3'",
+                    "amount": "'$4'"
+                }
+            ]'
+        )
+    else
+        genesis_with_wallet=$(echo $genesis_with_wallet |
+            jq '.app_state.bank.supply = (.app_state.bank.supply | map (
+                        select (
+                            .denom | contains ("'$3'")
+                        ).amount = (((.amount | tonumber) + '$4') | tostring)
+                    )
+                )'
+        )
+    fi
+    echo $genesis_with_wallet
+}
+
 echo "Applying single proposal contract custom config: $SINGLE_PROPOSAL_CONFIG"
 
 jq \
