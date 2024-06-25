@@ -17,6 +17,7 @@ services:
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
+      - ./current_data/:/opt/neutron/data
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
     ports:
@@ -24,4 +25,3 @@ services:
       - 26657:26657
       - 26656:26656
       - 9090:9090
-

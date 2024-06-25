@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.22-bullseye
+FROM golang:1.21-bullseye
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch feat/whitelist-tf-hooks-no-signature https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch v3.0.6 https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary

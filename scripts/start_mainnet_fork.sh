@@ -1,11 +1,10 @@
 #!/bin/bash
 
-neutrond tendermint unsafe-reset-all --home /opt/neutron/data
-
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
-if [ ! -d "/opt/neutron/data_backup" ]; then    
+if [ ! -d "/opt/neutron/data" ]; then
+    neutrond tendermint unsafe-reset-all --home /opt/neutron/data
     echo "Previous state backup not found, starting from genesis..."
     export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
     if [ ! -e "$SNAPSHOT_INPUT" ]; then
@@ -66,30 +65,11 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]    
 
     echo "Starting neutron..."
-    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
     NEUTRON_PID=$(echo $!)
 
     echo "Neutron started with PID $NEUTRON_PID"
-
-    while true; do
-        STATUS=$(curl -s http://localhost:26657/status)
-
-        LAST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.latest_block_height)
-        EARLIEST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.earliest_block_height)
-        echo "Earliest height: $EARLIEST_HEIGHT, last height: $LAST_HEIGHT"
-
-        if [ -n "$LAST_HEIGHT" ] && [ -n "$EARLIEST_HEIGHT" ] && [ "$LAST_HEIGHT" != "$EARLIEST_HEIGHT" ]; then
-            kill -9 $NEUTRON_PID
-            mkdir /opt/neutron/data_backup -p
-            cp -r /opt/neutron/data/* /opt/neutron/data_backup/
-            break
-        fi
-
-        sleep 15
-    done
 fi
 
-echo "Starting neutron using state backup..."
-cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
-cp -r /opt/neutron/data_backup/wasm/* /opt/neutron/data/wasm/
-neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace
+echo "Starting neutron using current data..."
+neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
