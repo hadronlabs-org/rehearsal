@@ -26,9 +26,9 @@ services:
       - 26657:26657
       - 26656:26656
       - 9090:9090
-  neutron-fork-continue:
+  continue-neutron-fork:
     image: neutron-mainnet-fork
-    container_name: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork-2
     volumes:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom

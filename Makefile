@@ -19,6 +19,11 @@ start-mainnet-fork:
 	@chmod 0777 ./snapshot
 	@$(COMPOSE) up neutron-fork -d
 
+continue-mainnet-fork:
+	@mkdir -p ./snapshot
+	@chmod 0777 ./snapshot
+	@$(COMPOSE) up continue-neutron-fork -d
+
 stop-mainnet-snapshot:
 	@docker stop neutron-mainnet-snapshot
 
