@@ -7,7 +7,7 @@ build-mainnet-snapshot-image:
 	@docker buildx build --load -t neutron-mainnet-snapshot -f Dockerfile.snapshot .
 
 build-mainnet-fork-image:
-	@docker buildx build --load -t neutron-mainnet-fork .
+	@docker buildx build --load --no-cache -t neutron-mainnet-fork .
 
 create-mainnet-snapshot:
 	@mkdir -p ./snapshot
