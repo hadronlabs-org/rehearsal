@@ -4,7 +4,8 @@ CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
 if [ "$FIRST_RUN" = "true" ]; then
-    cp -rf /opt/neutron/initial_data /opt/neutron/data
+    rm -rf /opt/neutron/data/*
+    cp -rf /opt/neutron/initial_data/* /opt/neutron/data
     neutrond tendermint unsafe-reset-all --home /opt/neutron/data
     echo "Previous state backup not found, starting from genesis..."
     export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
