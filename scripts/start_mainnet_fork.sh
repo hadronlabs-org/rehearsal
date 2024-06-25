@@ -71,5 +71,7 @@ if [ ! -d "/opt/neutron/data" ]; then
     echo "Neutron started with PID $NEUTRON_PID"
 fi
 
-echo "Starting neutron using current data..."
-neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
+if [ -d "/opt/neutron/data" ]; then
+    echo "Starting neutron using current data..."
+    neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
+fi
