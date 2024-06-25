@@ -8,7 +8,7 @@ WORKDIR /opt/neutron
 RUN make install-test-binary
 
 EXPOSE 26656 26657 1317 9090
-RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/data
+RUN neutrond init test --chain-id=neutron-1 --home /opt/neutron/initial_data
 COPY ./config/config.toml /opt/neutron/data/config/config.toml
 COPY --chmod=0755 ./scripts/create_genesis.sh /opt/neutron/create_genesis.sh
 COPY --chmod=0755 ./scripts/start_mainnet_fork.sh /opt/neutron/start_mainnet_fork.sh

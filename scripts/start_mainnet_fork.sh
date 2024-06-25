@@ -3,7 +3,8 @@
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
-if [ ! -d "/opt/neutron/data" ]; then
+if [ "$FIRST_RUN" = "true" ]; then
+    cp -rf /opt/neutron/initial_data /opt/neutron/data
     neutrond tendermint unsafe-reset-all --home /opt/neutron/data
     echo "Previous state backup not found, starting from genesis..."
     export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
@@ -68,7 +69,7 @@ if [ ! -d "/opt/neutron/data" ]; then
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
 fi
 
-if [ -d "/opt/neutron/data" ]; then
+if [ "$FIRST_RUN" = "false" ]; then
     echo "Starting neutron using current data..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace
 fi
