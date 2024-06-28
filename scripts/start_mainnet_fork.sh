@@ -46,7 +46,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         TEMP_GENESIS=$(mktemp genesis_XXXX.json)
         CUSTOM_GENESIS=$(mktemp custom_genesis_XXXX.json)
         cp /opt/neutron/data/config/genesis.json $TEMP_GENESIS
-        /bin/sh $CUSTOM_SCRIPT_PATH $TEMP_GENESIS $CUSTOM_GENESIS
+        /bin/bash $CUSTOM_SCRIPT_PATH $TEMP_GENESIS $CUSTOM_GENESIS
         if jq empty "$CUSTOM_GENESIS"; then
             cp $CUSTOM_GENESIS /opt/neutron/data/config/genesis.json
         else
