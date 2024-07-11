@@ -24,3 +24,9 @@ stop-mainnet-snapshot:
 
 stop-mainnet-fork:
 	@docker stop neutron-mainnet-fork
+
+build-slinky:
+		@docker buildx build --load --build-context app=https://github.com/skip-mev/slinky.git#v1.0.3 -t skip-mev/slinky-e2e-oracle -f ./Dockerfile.slinky .
+
+start-slinky:
+	@$(COMPOSE) up oracle -d

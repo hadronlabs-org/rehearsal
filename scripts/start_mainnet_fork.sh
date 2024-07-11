@@ -55,6 +55,11 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         fi
     fi
 
+    crudini --set /opt/neutron/data/config/app.toml oracle enabled true
+    crudini --set /opt/neutron/data/config/app.toml oracle oracle_address "\"oracle:8080\""
+    crudini --set /opt/neutron/data/config/app.toml oracle client_timeout "\"500ms\""
+    crudini --set /opt/neutron/data/config/app.toml oracle metrics_enabled true
+
     crudini --set /opt/neutron/data/config/app.toml api enable true
     crudini --set /opt/neutron/data/config/app.toml api swagger true
     crudini --set /opt/neutron/data/config/app.toml api address "\"tcp://0.0.0.0:1317\""
