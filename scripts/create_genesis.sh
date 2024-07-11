@@ -18,4 +18,3 @@ jq \
     .app_state.ibc.client_genesis.params.allowed_clients += ["09-localhost"] |
     .app_state.wasm.sequences[1].value = $sequence
     ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
-
