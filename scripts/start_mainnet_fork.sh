@@ -72,6 +72,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]
     crudini --set /opt/neutron/data/config/config.toml rpc laddr "\"tcp://0.0.0.0:26657\""
+    crudini --set /opt/neutron/data/config/app.toml grpc address "\"0.0.0.0:9090\""
 
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
