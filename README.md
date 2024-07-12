@@ -189,8 +189,8 @@ If you do not have snapshot file in `snapshot/snapshot.json`, it will download i
 
    To build and run it:
    ```bash
-   make build-slinky
-   make start-slinky
+   make build-oracle
+   make start-oracle
    ```
 
 **Stopping the Mainnet Fork Container**
@@ -206,7 +206,7 @@ If you do not have snapshot file in `snapshot/snapshot.json`, it will download i
    To stop Slinky Sidecar container:
 
    ```bash
-   make stop-slinky
+   make stop-oracle
    ```
 
 ### Running explorer
