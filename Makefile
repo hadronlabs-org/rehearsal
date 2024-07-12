@@ -30,3 +30,6 @@ build-slinky:
 
 start-slinky:
 	@$(COMPOSE) up oracle -d
+
+stop-slinky:
+	@docker stop rehearsal-oracle-1

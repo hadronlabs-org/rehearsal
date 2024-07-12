@@ -1,6 +1,6 @@
 # Neutron Mainnet Fork with integration tests
 
-**Neutron node version:** v3.0.2
+**Neutron node version:** v4.0.1
 
 This repository provides utilities to automate the creation and execution of a mainnet fork for the Neutron network, facilitating integration tests. With the rapid changes in the blockchain landscape, preliminary testing is crucial. Forking the mainnet allows developers to rigorously test contracts, modules, and other functionalities in an environment that mirrors the current mainnet. 
 
@@ -138,7 +138,7 @@ Instead of building docker container from sources you can use docker container [
 
 ## Commands
 
-1. **Building the Mainnet Snapshot Image**
+**Building the Mainnet Snapshot Image**
 
    Create an image of the Neutron mainnet snapshot. This command builds the `neutron-mainnet-snapshot` container. Inside this container, the `neutrond` node utilizes statsync to export the state.
 
@@ -146,7 +146,7 @@ Instead of building docker container from sources you can use docker container [
    make build-mainnet-snapshot-image
    ```
 
-2. **Creating the Mainnet Snapshot**
+**Creating the Mainnet Snapshot**
 
    Run the `neutron-mainnet-snapshot` container to generate a snapshot. This will be saved in the `./snapshot` directory.
 
@@ -154,7 +154,7 @@ Instead of building docker container from sources you can use docker container [
    make create-mainnet-snapshot
    ```
 
-3. **Stopping the Mainnet Snapshot Container**
+**Stopping the Mainnet Snapshot Container**
 
    To halt the `neutron-mainnet-snapshot` container's execution:
 
@@ -162,7 +162,12 @@ Instead of building docker container from sources you can use docker container [
    make stop-mainnet-snapshot
    ```
 
-4. **Building the Mainnet Fork Image**
+**Running the mainnet fork**
+
+NOTE: You do not need to build snapshot container if you just run the fork.
+If you do not have snapshot file in `snapshot/snapshot.json`, it will download it from `https://snapshot.neutron.org/`.
+
+1. Build the Mainnet Fork Image**
 
    Construct the `neutron-mainnet-fork` container. This command sets up the `neuntrond` node with a genesis block derived from the latest network snapshot, introducing certain parameter modifications. Additionally, it caches the network state for expedited node startup.
 
@@ -170,7 +175,7 @@ Instead of building docker container from sources you can use docker container [
    make build-mainnet-fork-image
    ```
 
-5. **Starting the Mainnet Fork**
+2. Start the Mainnet Fork
 
    To initiate the `neutron-mainnet-fork` container:
 
@@ -178,12 +183,30 @@ Instead of building docker container from sources you can use docker container [
    make start-mainnet-fork
    ```
 
-6. **Stopping the Mainnet Fork Container**
+3. Build and run slinky sidecar container
+
+   Sidecar is needed to for neutron node to fetch oracle prices from.
+
+   To build and run it:
+   ```bash
+   make build-slinky
+   make start-slinky
+   ```
+
+**Stopping the Mainnet Fork Container**
 
    To cease the `neutron-mainnet-fork` container's operation:
 
    ```bash
    make stop-mainnet-fork
+   ```
+
+**Stopping the Slinky Sidecar**
+
+   To stop Slinky Sidecar container:
+
+   ```bash
+   make stop-slinky
    ```
 
 ### Running explorer
