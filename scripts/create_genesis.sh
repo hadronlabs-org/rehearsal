@@ -21,5 +21,6 @@ jq \
     .app_state.adminmodule.admins += [$admin_account] |
     .app_state.ibc.client_genesis.params.allowed_clients += ["09-localhost"] |
     .consensus.params.abci.vote_extensions_enable_height = $enable_height |
+    .consensus.validators = [] |
     .app_state.wasm.sequences[1].value = $sequence
     ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
