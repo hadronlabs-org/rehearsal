@@ -1,2 +1,7 @@
 node_modules/
 snapshot/
+
+genesis/
+old_genesis/
+peers.json
+vals/

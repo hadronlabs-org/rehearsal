@@ -38,7 +38,9 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
+    echo "Adding consumer section..."
     neutrond add-consumer-section --home /opt/neutron/data
+    echo "Add main wallet to genesis account"
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
@@ -55,6 +57,11 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         fi
     fi
 
+    crudini --set /opt/neutron/data/config/app.toml oracle enabled true
+    crudini --set /opt/neutron/data/config/app.toml oracle oracle_address "\"oracle:8080\""
+    crudini --set /opt/neutron/data/config/app.toml oracle client_timeout "\"500ms\""
+    crudini --set /opt/neutron/data/config/app.toml oracle metrics_enabled true
+
     crudini --set /opt/neutron/data/config/app.toml api enable true
     crudini --set /opt/neutron/data/config/app.toml api swagger true
     crudini --set /opt/neutron/data/config/app.toml api address "\"tcp://0.0.0.0:1317\""
@@ -63,7 +70,9 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/neutron/data/config/app.toml
     sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0untrn"/' /opt/neutron/data/config/app.toml
 
-    crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]    
+    crudini --set /opt/neutron/data/config/config.toml rpc cors_allowed_origins [\"*\"]
+    crudini --set /opt/neutron/data/config/config.toml rpc laddr "\"tcp://0.0.0.0:26657\""
+    crudini --set /opt/neutron/data/config/app.toml grpc address "\"0.0.0.0:9090\""
 
     echo "Starting neutron..."
     neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false &
@@ -78,10 +87,24 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         EARLIEST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.earliest_block_height)
         echo "Earliest height: $EARLIEST_HEIGHT, last height: $LAST_HEIGHT"
 
+        # check if new blocks has been generated
+        # if so, create backup and start anew
         if [ -n "$LAST_HEIGHT" ] && [ -n "$EARLIEST_HEIGHT" ] && [ "$LAST_HEIGHT" != "$EARLIEST_HEIGHT" ]; then
+            echo "Killing neutrond to create backup"
             kill -9 $NEUTRON_PID
+            echo "Creating backup..."
             mkdir /opt/neutron/data_backup -p
             cp -r /opt/neutron/data/* /opt/neutron/data_backup/
+            mkdir "Backup copied"
+            break
+        fi
+
+        # check if process exited abnormally
+        # this can happen if we don't have enough RAM
+        kill -0 $NEUTRON_PID
+        EXIT_STATUS=$(echo $?)
+        if [ $EXIT_STATUS -ne 0 ]; then
+            echo "Process has been terminated. Exit code: $EXIT_STATUS"
             break
         fi
 
@@ -92,4 +115,4 @@ fi
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
 cp -r /opt/neutron/data_backup/wasm/* /opt/neutron/data/wasm/
-neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --log_level debug --trace
+neutrond start --home /opt/neutron/data --x-crisis-skip-assert-invariants --iavl-disable-fastnode false --trace

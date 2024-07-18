@@ -24,4 +24,24 @@ services:
       - 26657:26657
       - 26656:26656
       - 9090:9090
+    networks:
+      - devnet_network
+    depends_on:
+      - oracle
 
+  oracle:
+    image: skip-mev/slinky-e2e-oracle
+    container_name: oracle
+    entrypoint: [
+      "slinky",
+      "--market-map-endpoint", "neutron-mainnet-fork:9090",
+      ]
+    ports:
+      - "8080:8080" # main oracle port
+      - "8002:8002" # oracle metrics port
+    networks:
+      - devnet_network
+
+networks:
+  devnet_network:
+    driver: bridge
