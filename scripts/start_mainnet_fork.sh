@@ -87,10 +87,24 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         EARLIEST_HEIGHT=$(echo "$STATUS" | jq -r .result.sync_info.earliest_block_height)
         echo "Earliest height: $EARLIEST_HEIGHT, last height: $LAST_HEIGHT"
 
+        # check if new blocks has been generated
+        # if so, create backup and start anew
         if [ -n "$LAST_HEIGHT" ] && [ -n "$EARLIEST_HEIGHT" ] && [ "$LAST_HEIGHT" != "$EARLIEST_HEIGHT" ]; then
+            echo "Killing neutrond to create backup"
             kill -9 $NEUTRON_PID
+            echo "Creating backup..."
             mkdir /opt/neutron/data_backup -p
             cp -r /opt/neutron/data/* /opt/neutron/data_backup/
+            mkdir "Backup copied"
+            break
+        fi
+
+        # check if process exited abnormally
+        # this can happen if we don't have enough RAM
+        kill -0 $NEUTRON_PID
+        EXIT_STATUS=$(echo $?)
+        if [ $EXIT_STATUS -ne 0 ]; then
+            echo "Process has been terminated. Exit code: $EXIT_STATUS"
             break
         fi
 

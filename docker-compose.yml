@@ -26,6 +26,8 @@ services:
       - 9090:9090
     networks:
       - devnet_network
+    depends_on:
+      - oracle
 
   oracle:
     image: skip-mev/slinky-e2e-oracle
