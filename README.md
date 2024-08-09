@@ -1,6 +1,6 @@
 # Neutron Mainnet Fork with integration tests
 
-**Neutron node version:** v4.0.1
+**Neutron node version:** v4.2.0
 
 This repository provides utilities to automate the creation and execution of a mainnet fork for the Neutron network, facilitating integration tests. With the rapid changes in the blockchain landscape, preliminary testing is crucial. Forking the mainnet allows developers to rigorously test contracts, modules, and other functionalities in an environment that mirrors the current mainnet. 
 
