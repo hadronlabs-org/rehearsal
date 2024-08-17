@@ -2,7 +2,7 @@
 
 FROM golang:1.22-bullseye
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
-RUN git clone --branch feat/no-signature-checker https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch feat/no-signature-checker-admin-module-with-signer https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install-test-binary
