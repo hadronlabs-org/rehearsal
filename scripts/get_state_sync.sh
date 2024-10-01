@@ -50,4 +50,5 @@ echo "Neutron stopped"
 echo "Exporting state, please wait..."
 sleep 10
 neutrond export --home /opt/neutron/data > /opt/neutron/snapshot/snapshot.json
+sed -i '1,2d' /opt/neutron/snapshot/snapshot.json
 echo "State exported to /opt/neutron/snapshot/snapshot.json. Exiting..."
