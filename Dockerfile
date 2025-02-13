@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM golang:1.22-bullseye
+FROM golang:1.23-bullseye
 RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
 RUN git clone --branch feat/v5-no-signature-checker https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
