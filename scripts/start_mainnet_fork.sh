@@ -2,6 +2,8 @@
 
 neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
+CHAINID=${CHAINID:-"neutron-1"}
+VAL_MNEMONIC=${VAL_MNEMONIC:-"dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith"}
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
 
@@ -38,10 +40,13 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
-    echo "Adding consumer section..."
-    neutrond add-consumer-section --home /opt/neutron/data
     echo "Add main wallet to genesis account"
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
+    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val --keyring-backend test -a)" "2000000000untrn"  --home "/opt/neutron/data"
+    neutrond gentx val "1000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID"
+    neutrond collect-gentxs --home /opt/neutron/data
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."

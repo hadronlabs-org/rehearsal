@@ -19,6 +19,8 @@ services:
       - ./custom/:/opt/neutron/custom
     environment:
       - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
+      # - VAL_MNEMONIC=""
     ports:
       - 1317:1317
       - 26657:26657
