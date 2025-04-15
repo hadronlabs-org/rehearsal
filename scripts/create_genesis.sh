@@ -25,5 +25,6 @@ jq \
     .app_state.wasm.sequences[1].value = $sequence |
     .app_state.revenue.validators = [] |
     .app_state.staking.last_validator_powers = [] |
-    .app_state.staking.last_total_power = "0"
+    .app_state.staking.last_total_power = "0" |
+    .app_state.staking.params.max_validators = 1
     ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
