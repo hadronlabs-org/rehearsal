@@ -23,5 +23,7 @@ jq \
     .consensus.params.abci.vote_extensions_enable_height = $enable_height |
     .consensus.validators = [] |
     .app_state.wasm.sequences[1].value = $sequence |
-    .app_state.revenue.validators = []
+    .app_state.revenue.validators = [] |
+    .app_state.staking.last_validator_powers = [] |
+    .app_state.staking.last_total_power = "0"
     ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
