@@ -44,8 +44,8 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
 
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
-    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val --keyring-backend test -a)" "2000000000000000000untrn"  --home "/opt/neutron/data"
-    neutrond gentx val "1000000000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn
+    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val --keyring-backend test -a)" "10000000000000untrn"  --home "/opt/neutron/data"
+    neutrond gentx val "8000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn
     neutrond collect-gentxs --home /opt/neutron/data
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
