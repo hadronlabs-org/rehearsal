@@ -45,7 +45,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
     neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val --keyring-backend test -a)" "10000000000000untrn"  --home "/opt/neutron/data"
-    neutrond gentx val "8000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn
+    neutrond gentx val "8000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
     neutrond collect-gentxs --home /opt/neutron/data
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
