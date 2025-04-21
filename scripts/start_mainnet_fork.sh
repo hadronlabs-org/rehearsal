@@ -108,7 +108,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
             echo "Creating backup..."
             mkdir /opt/neutron/data_backup -p
             cp -r /opt/neutron/data/* /opt/neutron/data_backup/
-            mkdir "Backup copied"
+            echo "Backup copied"
             break
         fi
 
