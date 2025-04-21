@@ -13,6 +13,12 @@ WASM_SEQUENCES=$((WASM_SEQUENCES + 1))
 INITIAL_HEIGHT=$(jq '.initial_height' $SNAPSHOT_INPUT)
 ENABLE_HEIGHT=$((INITIAL_HEIGHT + 2))
 
+jq '.app_state.wasm.contracts |= map(if .contract_info.label | test("^[ \\t\\r\\n]+|[ \\t\\r\\n]+$") then .contract_info.label |= gsub("^[ \\t\\r\\n]+|[ \\t\\r\\n]+$"; "") else . end)' $SNAPSHOT_INPUT > temp.json
+
+jq '.app_state.bank.denom_metadata |= map(select(.name == "Neutron"))' temp.json > temp1.json
+
+rm -f temp.json
+
 jq \
     --arg sequence "$WASM_SEQUENCES" \
     --arg admin_account "$MAIN_WALLET" \
@@ -27,4 +33,6 @@ jq \
     .app_state.staking.last_validator_powers = [] |
     .app_state.staking.last_total_power = "0" |
     .app_state.staking.params.max_validators = 1
-    ' $SNAPSHOT_INPUT > $GENESIS_OUTPUT
+    ' temp1.json > $GENESIS_OUTPUT
+
+rm -f temp1.json

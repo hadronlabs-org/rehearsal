@@ -1,5 +1,8 @@
 #!/bin/bash
 
+free -h
+cat /sys/fs/cgroup/memory/memory.limit_in_bytes
+
 neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
 CHAINID=${CHAINID:-"neutron-1"}
@@ -40,13 +43,18 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
-    echo "Add main wallet to genesis account"
-    neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    echo "Add val wallet to genesis account"
 
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
-    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val --keyring-backend test -a)" "2000000000000000000untrn"  --home "/opt/neutron/data"
-    neutrond gentx val "1000000000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn
-    neutrond collect-gentxs --home /opt/neutron/data
+
+    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"    
+
+    neutrond add-genesis-account $MAIN_WALLET 1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    neutrond gentx val "80000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
+
+    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."
@@ -110,12 +118,13 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         EXIT_STATUS=$(echo $?)
         if [ $EXIT_STATUS -ne 0 ]; then
             echo "Process has been terminated. Exit code: $EXIT_STATUS"
-            break
+            exit -1
         fi
-
-        sleep 15
+        sleep 60
     done
 fi
+
+#sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
