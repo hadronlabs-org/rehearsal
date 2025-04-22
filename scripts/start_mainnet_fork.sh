@@ -36,7 +36,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
         echo "Downloading $SNAPSHOT_ARCHIVE..."
         echo "Snapshot name: $SNAPSHOT_NAME"
-        wget ${SNAPSHOT_DOWNLOAD_URL}/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
+        wget ${SNAPSHOT_DOWNLOAD_URL}/raw/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
         gunzip -f /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE 
         mv -f /opt/neutron/snapshot/$SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
     fi
