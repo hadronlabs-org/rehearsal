@@ -16,7 +16,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     if [ ! -e "$SNAPSHOT_INPUT" ]; then
         echo "Snapshot not found, downloading it from snapshot service..."
 
-        METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/.metadata.json)
+        METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/raw/.metadata.json)
         if [ -z "$METADATA" ]; then
             echo "Snapshot metadata not found, aborting..."
             exit 1
