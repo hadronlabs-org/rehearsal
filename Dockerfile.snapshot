@@ -2,7 +2,7 @@
 
 FROM golang:1.23-bullseye
 RUN apt-get update && apt-get install -y jq curl git
-RUN git clone --branch v5.1.2 https://github.com/neutron-org/neutron.git /opt/neutron
+RUN git clone --branch v6.0.0 https://github.com/neutron-org/neutron.git /opt/neutron
 WORKDIR /opt/neutron
 
 RUN make install

@@ -18,7 +18,9 @@ services:
       - ./snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
     environment:
-      - MAIN_WALLET=neutron1kyn3jx88wvnm3mhnwpuue29alhsatwzrpkwhu6
+      - MAIN_WALLET=neutron1473jqhjtz36zplpdhguyghma7uya2cf06kl27p
+      # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
+      # - VAL_MNEMONIC=""
     ports:
       - 1317:1317
       - 26657:26657
@@ -28,6 +30,8 @@ services:
       - devnet_network
     depends_on:
       - oracle
+    mem_limit: 60g
+    memswap_limit: 156g
 
   oracle:
     image: skip-mev/slinky-e2e-oracle

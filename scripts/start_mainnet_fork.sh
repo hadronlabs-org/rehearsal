@@ -1,9 +1,14 @@
 #!/bin/bash
 
+free -h
+cat /sys/fs/cgroup/memory/memory.limit_in_bytes
+
 neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
+CHAINID=${CHAINID:-"neutron-1"}
+VAL_MNEMONIC=${VAL_MNEMONIC:-"dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith"}
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
-SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
+SNAPSHOT_DOWNLOAD_URL="https://snapshots-cdn.neutron.org"
 
 if [ ! -d "/opt/neutron/data_backup" ]; then    
     echo "Previous state backup not found, starting from genesis..."
@@ -11,7 +16,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     if [ ! -e "$SNAPSHOT_INPUT" ]; then
         echo "Snapshot not found, downloading it from snapshot service..."
 
-        METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/.metadata.json)
+        METADATA=$(curl -s $SNAPSHOT_DOWNLOAD_URL/raw/.metadata.json)
         if [ -z "$METADATA" ]; then
             echo "Snapshot metadata not found, aborting..."
             exit 1
@@ -31,17 +36,25 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
         echo "Downloading $SNAPSHOT_ARCHIVE..."
         echo "Snapshot name: $SNAPSHOT_NAME"
-        wget ${SNAPSHOT_DOWNLOAD_URL}/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
+        wget ${SNAPSHOT_DOWNLOAD_URL}/raw/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
         gunzip -f /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE 
         mv -f /opt/neutron/snapshot/$SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
     fi
 
     echo "Creating genesis..."
     GENESIS_OUTPUT=/opt/neutron/data/config/genesis.json /opt/neutron/create_genesis.sh
-    echo "Adding consumer section..."
-    neutrond add-consumer-section --home /opt/neutron/data
-    echo "Add main wallet to genesis account"
-    neutrond add-genesis-account $MAIN_WALLET 99999000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    echo "Add val wallet to genesis account"
+
+    echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
+
+    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"    
+
+    neutrond add-genesis-account $MAIN_WALLET 1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+
+    neutrond gentx val "80000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
+
+    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."
@@ -95,7 +108,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
             echo "Creating backup..."
             mkdir /opt/neutron/data_backup -p
             cp -r /opt/neutron/data/* /opt/neutron/data_backup/
-            mkdir "Backup copied"
+            echo "Backup copied"
             break
         fi
 
@@ -105,12 +118,13 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         EXIT_STATUS=$(echo $?)
         if [ $EXIT_STATUS -ne 0 ]; then
             echo "Process has been terminated. Exit code: $EXIT_STATUS"
-            break
+            exit -1
         fi
-
-        sleep 15
+        sleep 60
     done
 fi
+
+#sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
