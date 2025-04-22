@@ -8,7 +8,7 @@ neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 CHAINID=${CHAINID:-"neutron-1"}
 VAL_MNEMONIC=${VAL_MNEMONIC:-"dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith"}
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
-SNAPSHOT_DOWNLOAD_URL="https://raw-snapshots.neutron.org"
+SNAPSHOT_DOWNLOAD_URL="https://snapshots-cdn.neutron.org"
 
 if [ ! -d "/opt/neutron/data_backup" ]; then    
     echo "Previous state backup not found, starting from genesis..."
