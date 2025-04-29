@@ -19,6 +19,8 @@ services:
       - ./custom/:/opt/neutron/custom
     environment:
       - MAIN_WALLET=neutron1473jqhjtz36zplpdhguyghma7uya2cf06kl27p
+      # it's possible to create main wallet with predefined funds with MAIN_WALLET_FUNDS env var
+      # - MAIN_WALLET_FUNDS=1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9
       # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
       # - VAL_MNEMONIC=""
     ports:
@@ -36,10 +38,7 @@ services:
   oracle:
     image: skip-mev/slinky-e2e-oracle
     container_name: oracle
-    entrypoint: [
-      "slinky",
-      "--market-map-endpoint", "neutron-mainnet-fork:9090",
-      ]
+    entrypoint: [ "slinky", "--market-map-endpoint", "neutron-mainnet-fork:9090" ]
     ports:
       - "8080:8080" # main oracle port
       - "8002:8002" # oracle metrics port
