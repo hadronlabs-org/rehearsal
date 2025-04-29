@@ -7,6 +7,7 @@ neutrond tendermint unsafe-reset-all --home /opt/neutron/data
 
 CHAINID=${CHAINID:-"neutron-1"}
 VAL_MNEMONIC=${VAL_MNEMONIC:-"dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith"}
+MAIN_WALLET_FUNDS=${MAIN_WALLET_FUNDS:-"1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9"}
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://snapshots-cdn.neutron.org"
 
@@ -46,11 +47,13 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Add val wallet to genesis account"
 
+    # Delete key just in case. This is required to avoid error "Key already exists" when adding new key after snapshot restoring
+    neutrond keys delete val --home /opt/neutron/data --keyring-backend test
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
 
     neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"    
 
-    neutrond add-genesis-account $MAIN_WALLET 1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 --home /opt/neutron/data
+    neutrond add-genesis-account $MAIN_WALLET $MAIN_WALLET_FUNDS --home /opt/neutron/data
 
     neutrond gentx val "80000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
 
@@ -123,8 +126,6 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         sleep 60
     done
 fi
-
-#sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
