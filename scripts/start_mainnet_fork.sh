@@ -46,6 +46,8 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     echo "Add val wallet to genesis account"
 
+    # Delete key just in case. This is required to avoid error "Key already exists" when adding new key after snapshot restoring
+    neutrond keys delete val --home /opt/neutron/data --keyring-backend test
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
 
     neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"    
@@ -123,8 +125,6 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         sleep 60
     done
 fi
-
-#sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
