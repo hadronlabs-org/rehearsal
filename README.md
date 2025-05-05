@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/github/license/hadronlabs-org/rehearsal)](https://github.com/hadronlabs-org/rehearsal/blob/main/LICENSE)
+
 # Neutron Mainnet Fork with integration tests
 
 **Neutron node version:** v5.0.1
