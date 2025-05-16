@@ -1,24 +1,13 @@
 version: '3.8'
 services:
-  neutron-snapshot:
-    image: neutron-mainnet-snapshot
-    container_name: neutron-mainnet-snapshot
+  celestia-fork:
+    image: celestia-mainnet-fork
+    container_name: celestia-mainnet-fork
     volumes:
-      - ./snapshot/:/opt/neutron/snapshot
+      - ./snapshot/:/opt/celestia/snapshot
+      - ./custom/:/opt/celestia/custom
     environment:
-      - RPC_NODE=https://neutron-rpc.polkachu.com:443
-      - INTERVAL=1000
-      - NEUTROND_P2P_MAX_NUM_OUTBOUND_PEERS=500
-      - NEUTROND_P2P_MAX_NUM_INBOUND_PEERS=500
-
-  neutron-fork:
-    image: neutron-mainnet-fork
-    container_name: neutron-mainnet-fork
-    volumes:
-      - ./snapshot/:/opt/neutron/snapshot
-      - ./custom/:/opt/neutron/custom
-    environment:
-      - MAIN_WALLET=neutron1473jqhjtz36zplpdhguyghma7uya2cf06kl27p
+      - MAIN_WALLET=celestia1473jqhjtz36zplpdhguyghma7uya2cf00r8c7t
       # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
       # - VAL_MNEMONIC=""
     ports:
@@ -28,8 +17,6 @@ services:
       - 9090:9090
     networks:
       - devnet_network
-    depends_on:
-      - oracle
     mem_limit: 60g
     memswap_limit: 156g
 
@@ -38,7 +25,7 @@ services:
     container_name: oracle
     entrypoint: [
       "slinky",
-      "--market-map-endpoint", "neutron-mainnet-fork:9090",
+      "--market-map-endpoint", "celestia-mainnet-fork:9090",
       ]
     ports:
       - "8080:8080" # main oracle port
