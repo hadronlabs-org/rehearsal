@@ -25,15 +25,12 @@ if [ ! -d "/opt/celestia/data_backup" ]; then
 
     celestia-appd collect-gentxs --home /opt/celestia/data --log_level=error --log-to-file="/opt/celestia/data/collect-gentxs.log" --trace > /dev/null 2>&1
 
-    crudini --set /opt/celestia/data/config/app.toml oracle enabled true
-    crudini --set /opt/celestia/data/config/app.toml oracle oracle_address "\"oracle:8080\""
-    crudini --set /opt/celestia/data/config/app.toml oracle client_timeout "\"500ms\""
-    crudini --set /opt/celestia/data/config/app.toml oracle metrics_enabled true
-
     crudini --set /opt/celestia/data/config/app.toml api enable true
     crudini --set /opt/celestia/data/config/app.toml api swagger true
     crudini --set /opt/celestia/data/config/app.toml api address "\"tcp://0.0.0.0:1317\""
     crudini --set /opt/celestia/data/config/app.toml api enabled-unsafe-cors true
+    crudini --set /opt/celestia/data/config/app.toml grpc enable true
+    crudini --set /opt/celestia/data/config/app.toml grpc-web enable true
     crudini --set /opt/celestia/data/config/app.toml grpc-web enable-unsafe-cors true
     sed -i 's/^pruning =.*/pruning = "nothing"/' /opt/celestia/data/config/app.toml
     sed -i 's/^minimum\-gas\-prices =.*/minimum\-gas\-prices = "0utia"/' /opt/celestia/data/config/app.toml

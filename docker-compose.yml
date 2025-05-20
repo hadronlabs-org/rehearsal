@@ -1,13 +1,26 @@
 version: '3.8'
 services:
-  celestia-fork:
-    image: celestia-mainnet-fork
-    container_name: celestia-mainnet-fork
+  neutron-snapshot:
+    image: neutron-mainnet-snapshot
+    container_name: neutron-mainnet-snapshot
     volumes:
-      - ./snapshot/:/opt/celestia/snapshot
-      - ./custom/:/opt/celestia/custom
+      - ./neutron-snapshot/:/opt/neutron/snapshot
     environment:
-      - MAIN_WALLET=celestia1473jqhjtz36zplpdhguyghma7uya2cf00r8c7t
+      - RPC_NODE=https://neutron-rpc.polkachu.com:443
+      - INTERVAL=1000
+      - NEUTROND_P2P_MAX_NUM_OUTBOUND_PEERS=500
+      - NEUTROND_P2P_MAX_NUM_INBOUND_PEERS=500
+
+  neutron-fork:
+    image: neutron-mainnet-fork
+    container_name: neutron-mainnet-fork
+    volumes:
+      - ./neutron-snapshot/:/opt/neutron/snapshot
+      - ./custom/:/opt/neutron/custom
+    environment:
+      - MAIN_WALLET=neutron1473jqhjtz36zplpdhguyghma7uya2cf06kl27p
+      # it's possible to create main wallet with predefined funds with MAIN_WALLET_FUNDS env var
+      # - MAIN_WALLET_FUNDS=1000000000000untrn,99999000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9
       # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
       # - VAL_MNEMONIC=""
     ports:
@@ -17,6 +30,8 @@ services:
       - 9090:9090
     networks:
       - devnet_network
+    depends_on:
+      - oracle
     mem_limit: 60g
     memswap_limit: 156g
 
@@ -29,6 +44,44 @@ services:
       - "8002:8002" # oracle metrics port
     networks:
       - devnet_network
+
+  celestia-fork:
+    image: celestia-mainnet-fork
+    container_name: celestia-mainnet-fork
+    volumes:
+      - ./celestia-snapshot/:/opt/celestia/snapshot
+    environment:
+      - MAIN_WALLET=celestia1473jqhjtz36zplpdhguyghma7uya2cf00r8c7t
+      # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
+      # - VAL_MNEMONIC=""
+    ports:
+      - 1318:1317
+      - 26659:26657
+      - 26658:26656
+      - 9091:9090
+    networks:
+      - devnet_network
+    mem_limit: 60g
+    memswap_limit: 156g
+
+  hermes:
+    image: hermes
+    entrypoint: ["/bin/bash", "/start_hermes.sh"]
+    container_name: hermes
+    restart: unless-stopped
+    volumes:
+      - ./config/hermes/config.toml:/home/hermes/.hermes/config.toml:ro
+    networks:
+      - devnet_network
+    depends_on:
+      - neutron-fork
+      - celestia-fork
+    environment:
+      - RUST_LOG=info
+      - NEUTRON_MNEMONIC=dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith
+      - CELESTIA_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
+    ports:
+      - "3000:3000"
 
 networks:
   devnet_network:

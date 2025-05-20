@@ -1,0 +1,7 @@
+FROM ghcr.io/informalsystems/hermes:v1.8.0
+
+RUN mkdir -p /home/hermes/.hermes && chown -R hermes:hermes /home/hermes
+
+COPY --chmod=0755 ./scripts/start_hermes.sh /start_hermes.sh
+
+CMD ["bash", "/start_hermes.sh"]

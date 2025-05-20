@@ -10,7 +10,7 @@ RUN make install
 EXPOSE 26656 26657 1317 9090
 RUN celestia-appd init test --chain-id=celestia --home /opt/celestia/data
 COPY ./config/config.toml /opt/celestia/data/config/config.toml
-COPY --chmod=0755 ./scripts/create_genesis.sh /opt/celestia/create_genesis.sh
+COPY --chmod=0755 scripts/create_celestia_genesis.sh /opt/celestia/create_genesis.sh
 COPY --chmod=0755 ./scripts/start_celestia_fork.sh /opt/celestia/start_celestia_fork.sh
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \
