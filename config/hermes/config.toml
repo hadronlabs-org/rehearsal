@@ -1,0 +1,39 @@
+[global]
+log_level = 'info'
+
+[[chains]]
+id = "neutron-1"
+rpc_addr = "http://neutron-mainnet-fork:26657"
+grpc_addr = "http://neutron-mainnet-fork:9090"
+event_source = { mode = "push", url = "ws://neutron-mainnet-fork:26657/websocket" }
+rpc_timeout = "10s"
+account_prefix = "neutron"
+key_name = "neutron-key"
+store_prefix = "ibc"
+default_gas = 3000000
+max_gas = 15000000
+gas_price = { price = 0.0025, denom = "untrn" }
+gas_multiplier = 2.3
+clock_drift = "10s"
+trusting_period = "14days"
+trust_threshold = { numerator = 1, denominator = 3 }
+key_store_type = "Test"
+
+[[chains]]
+id = "celestia"
+rpc_addr = "http://celestia-mainnet-fork:26657"
+grpc_addr = "http://celestia-mainnet-fork:9090"
+event_source = { mode = "push", url = "ws://celestia-mainnet-fork:26657/websocket" }
+rpc_timeout = "10s"
+account_prefix = "celestia"
+key_name = "celestia-key"
+store_prefix = "ibc"
+default_gas = 3000000
+max_gas = 15000000
+gas_price = { price = 0.005, denom = "utia" }
+gas_multiplier = 2.3
+clock_drift = "10s"
+trusting_period = "14days"
+trust_threshold = { numerator = 1, denominator = 3 }
+compat_mode = "0.34"
+key_store_type = "Test"
