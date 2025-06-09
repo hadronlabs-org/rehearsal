@@ -4,7 +4,7 @@ services:
     image: neutron-mainnet-snapshot
     container_name: neutron-mainnet-snapshot
     volumes:
-      - ./snapshot/:/opt/neutron/snapshot
+      - ./neutron-snapshot/:/opt/neutron/snapshot
     environment:
       - RPC_NODE=https://neutron-rpc.polkachu.com:443
       - INTERVAL=1000
@@ -15,7 +15,7 @@ services:
     image: neutron-mainnet-fork
     container_name: neutron-mainnet-fork
     volumes:
-      - ./snapshot/:/opt/neutron/snapshot
+      - ./neutron-snapshot/:/opt/neutron/snapshot
       - ./custom/:/opt/neutron/custom
     environment:
       - MAIN_WALLET=neutron1473jqhjtz36zplpdhguyghma7uya2cf06kl27p
@@ -44,6 +44,45 @@ services:
       - "8002:8002" # oracle metrics port
     networks:
       - devnet_network
+
+  celestia-fork:
+    image: celestia-mainnet-fork
+    container_name: celestia-mainnet-fork
+    volumes:
+      - ./celestia-snapshot/:/opt/celestia/snapshot
+      - ./custom/celestia:/opt/celestia/custom
+    environment:
+      - MAIN_WALLET=celestia1473jqhjtz36zplpdhguyghma7uya2cf00r8c7t
+      # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
+      # - VAL_MNEMONIC=""dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith
+    ports:
+      - 1318:1317
+      - 26659:26657
+      - 26658:26656
+      - 9091:9090
+    networks:
+      - devnet_network
+    mem_limit: 60g
+    memswap_limit: 156g
+
+  hermes:
+    image: hermes
+    entrypoint: ["/bin/bash", "/start_hermes.sh"]
+    container_name: hermes
+    restart: unless-stopped
+    volumes:
+      - ./config/hermes/config.toml:/home/hermes/.hermes/config.toml:ro
+    networks:
+      - devnet_network
+    depends_on:
+      - neutron-fork
+      - celestia-fork
+    environment:
+      - RUST_LOG=info
+      - NEUTRON_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
+      - CELESTIA_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
+    ports:
+      - "3000:3000"
 
 networks:
   devnet_network:

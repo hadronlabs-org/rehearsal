@@ -11,7 +11,7 @@ MAIN_WALLET_FUNDS=${MAIN_WALLET_FUNDS:-"1000000000000untrn,99999000000ibc/C4CFF4
 CUSTOM_SCRIPT_PATH=/opt/neutron/custom/config.sh
 SNAPSHOT_DOWNLOAD_URL="https://snapshots-cdn.neutron.org"
 
-if [ ! -d "/opt/neutron/data_backup" ]; then    
+if [ ! -d "/opt/neutron/data_backup" ]; then
     echo "Previous state backup not found, starting from genesis..."
     export SNAPSHOT_INPUT=/opt/neutron/snapshot/snapshot.json
     if [ ! -e "$SNAPSHOT_INPUT" ]; then
@@ -31,14 +31,14 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         if ! echo $METADATA | jq -e 'has("snapshot_path")' > /dev/null; then
             echo "Wrong metadata file type, aborting..."
             exit 1
-        fi        
+        fi
 
         SNAPSHOT_ARCHIVE=$(echo "$METADATA" | jq -r .snapshot_path)
         SNAPSHOT_NAME=$(echo "$METADATA" | jq -r .snapshot_name)
         echo "Downloading $SNAPSHOT_ARCHIVE..."
         echo "Snapshot name: $SNAPSHOT_NAME"
         wget ${SNAPSHOT_DOWNLOAD_URL}/raw/$SNAPSHOT_ARCHIVE -O /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
-        gunzip -f /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE 
+        gunzip -f /opt/neutron/snapshot/$SNAPSHOT_ARCHIVE
         mv -f /opt/neutron/snapshot/$SNAPSHOT_NAME /opt/neutron/snapshot/snapshot.json
     fi
 
@@ -51,13 +51,13 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     neutrond keys delete val --home /opt/neutron/data --keyring-backend test
     echo "$VAL_MNEMONIC" | neutrond keys add val --home /opt/neutron/data --recover --keyring-backend=test
 
-    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"    
+    neutrond add-genesis-account "$(neutrond --home "/opt/neutron/data" keys show val -a --keyring-backend=test)" "81000000000000untrn"  --home "/opt/neutron/data"
 
     neutrond add-genesis-account $MAIN_WALLET $MAIN_WALLET_FUNDS --home /opt/neutron/data
 
     neutrond gentx val "80000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
 
-    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color
+    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color > /dev/null 2>&1
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."
@@ -126,6 +126,9 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
         sleep 60
     done
 fi
+
+sed -i 's|^log_file = .*|log_file = ""|' /opt/neutron/data/config/config.toml
+sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/
