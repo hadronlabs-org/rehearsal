@@ -6,7 +6,8 @@ cat /sys/fs/cgroup/memory.max
 celestia-appd tendermint unsafe-reset-all --home /opt/celestia/data
 
 CHAINID=${CHAINID:-"celestia"}
-VAL_MNEMONIC=${VAL_MNEMONIC:-"child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author"}
+VAL_MNEMONIC=${VAL_MNEMONIC:-"power derive atom text blind zoo sting ripple beyond have october nest rack certain lizard slim april light village faculty bundle trophy vote direct"}
+CUSTOM_SCRIPT_PATH=/opt/celestia/custom/config.sh
 
 if [ ! -d "/opt/celestia/data_backup" ]; then
     echo "Previous state backup not found, starting from genesis..."
@@ -24,6 +25,20 @@ if [ ! -d "/opt/celestia/data_backup" ]; then
     celestia-appd gentx val "50000000000000utia" --home /opt/celestia/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053utia --keyring-backend=test
 
     celestia-appd collect-gentxs --home /opt/celestia/data --log_level=error --log-to-file="/opt/celestia/data/collect-gentxs.log" --trace > /dev/null 2>&1
+
+    if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
+        echo "Applying custom configurations..."
+        TEMP_GENESIS=$(mktemp genesis_XXXX.json)
+        CUSTOM_GENESIS=$(mktemp custom_genesis_XXXX.json)
+        cp /opt/celestia/data/config/genesis.json $TEMP_GENESIS
+        /bin/bash $CUSTOM_SCRIPT_PATH $TEMP_GENESIS $CUSTOM_GENESIS
+        if jq empty "$CUSTOM_GENESIS"; then
+            cp $CUSTOM_GENESIS /opt/celestia/data/config/genesis.json
+        else
+            echo "Custom genesis is not valid, aborting..."
+            exit 1
+        fi
+    fi
 
     crudini --set /opt/celestia/data/config/app.toml api enable true
     crudini --set /opt/celestia/data/config/app.toml api swagger true

@@ -15,7 +15,4 @@ fi
 echo "Using Hermes config:"
 cat /home/hermes/.hermes/config.toml
 
-echo "Container started. Sleeping indefinitely..."
-tail -f /dev/null
-
-#exec hermes start
+exec hermes start

@@ -4,52 +4,29 @@ set -euo pipefail
 INPUT_GENESIS_FILE=$1
 OUTPUT_GENESIS_FILE=$2
 
-CONTRACT_ADDRESS="neutron1vqtnu54addf87qp73fnjvqafruzkr2zjgswkhsmsg45t08wla2nqqan0hc"
-CONFIG_KEY_HEX="636F6E6669675F7632"
-SINGLE_PROPOSAL_CONFIG='{
-  "threshold": {
-    "absolute_count": {
-      "threshold": "1"
-    }
-  },
-  "max_voting_period": {
-    "time": 1209600
-  },
-  "min_voting_period": null,
-  "allow_revoting": false,
-  "dao": "neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff",
-  "close_proposal_on_execution_failure": true
-}'
+CLIENT_ID="07-tendermint-29"
+CHANNEL_ID="channel-57"
+PORT_ID="icahost"
+RESET_SEQUENCE="1"
 
-echo "Encoding WASM config..."
-ENCODED_CONFIG=$(echo "$SINGLE_PROPOSAL_CONFIG" | jq -c '.' | base64 | tr -d '\n')
-
-CLIENT_ID="07-tendermint-48"
-CHANNEL_ID="channel-6028"
-PORT_ID="icacontroller-$CONTRACT_ADDRESS.DROP"
-
-echo "Patching Neutron genesis..."
+echo "Patching Celestia genesis for ICA sync recovery..."
 
 jq \
-  --arg addr "$CONTRACT_ADDRESS" \
-  --arg key "$CONFIG_KEY_HEX" \
-  --arg val "$ENCODED_CONFIG" \
   --arg client_id "$CLIENT_ID" \
   --arg channel_id "$CHANNEL_ID" \
-  --arg port_id "$PORT_ID" '
+  --arg port_id "$PORT_ID" \
+  --arg sequence "$RESET_SEQUENCE" '
   .app_state.ibc.client_genesis.clients |= map(
     if .client_id == $client_id then
       .client_state.latest_height.revision_height = "0"
     else . end
   )
-  | .app_state.wasm.contracts |= map(
-    if .contract_address == $addr then
-      .contract_state |= map(
-        if .key == $key then .value = $val else . end
-      )
-    else . end
-  )
-  | .initial_height = 25137915
+  | .app_state.ibc.channel_genesis.channels |= map(
+      if .channel_id == $channel_id and .counterparty.port_id == $port_id then
+        .state = "STATE_OPEN"
+      else . end
+    )
+  | .initial_height = "5515577"
   | .app_state.ibc.channel_genesis.acknowledgements |= map(select(.channel_id != $channel_id or .port_id != $port_id))
   | .app_state.ibc.channel_genesis.recv_sequences   |= map(select(.channel_id != $channel_id or .port_id != $port_id))
   | .app_state.ibc.channel_genesis.send_sequences   |= map(select(.channel_id != $channel_id or .port_id != $port_id))
@@ -72,4 +49,4 @@ jq \
     }]
 ' "$INPUT_GENESIS_FILE" > "$OUTPUT_GENESIS_FILE"
 
-echo "Done. Patched genesis written to $OUTPUT_GENESIS_FILE"
+echo "Done. Patched Celestia genesis written to $OUTPUT_GENESIS_FILE"
