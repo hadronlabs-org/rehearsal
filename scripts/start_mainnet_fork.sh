@@ -57,7 +57,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 
     neutrond gentx val "80000000000000untrn" --home /opt/neutron/data --chain-id "$CHAINID" --gas 1000000 --gas-prices 0.0053untrn --keyring-backend=test
 
-    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color
+    neutrond collect-gentxs --home /opt/neutron/data --log_level=error --log_no_color > /dev/null 2>&1
 
     if [ -e "$CUSTOM_SCRIPT_PATH" ]; then
         echo "Applying custom configurations..."
@@ -127,8 +127,8 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
     done
 fi
 
-#sed -i 's|^log_file = .*|log_file = ""|' /opt/neutron/data/config/config.toml
-#sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
+sed -i 's|^log_file = .*|log_file = ""|' /opt/neutron/data/config/config.toml
+sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/

@@ -50,10 +50,11 @@ services:
     container_name: celestia-mainnet-fork
     volumes:
       - ./celestia-snapshot/:/opt/celestia/snapshot
+      - ./custom/celestia:/opt/celestia/custom
     environment:
       - MAIN_WALLET=celestia1473jqhjtz36zplpdhguyghma7uya2cf00r8c7t
       # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
-      # - VAL_MNEMONIC=""
+      # - VAL_MNEMONIC=""dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith
     ports:
       - 1318:1317
       - 26659:26657
@@ -78,7 +79,7 @@ services:
       - celestia-fork
     environment:
       - RUST_LOG=info
-      - NEUTRON_MNEMONIC=dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith
+      - NEUTRON_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
       - CELESTIA_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
     ports:
       - "3000:3000"

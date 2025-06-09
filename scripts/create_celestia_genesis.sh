@@ -26,5 +26,10 @@ jq \
       "params": {
         "data_commitment_window": "400"
       }
-    }
+    } |
+    .app_state.gov.voting_params.voting_period = "300s" |
+    .app_state.gov.tally_params.quorum = "0.000000000000000001" |
+    .app_state.gov.tally_params.threshold = "0.000000000000000001" |
+    .app_state.gov.deposit_params.max_deposit_period = "300s" |
+    .app_state.gov.deposit_params.min_deposit[0].amount = "100"
   ' "$SNAPSHOT_INPUT" > "$GENESIS_OUTPUT"
