@@ -35,6 +35,17 @@ start-celestia-fork:
 stop-celestia-fork:
 	@docker stop celestia-mainnet-fork
 
+build-cosmoshub-fork-image:
+	@docker build -f Dockerfile.gaia -t cosmoshub-mainnet-fork .
+
+start-cosmoshub-fork:
+	@mkdir -p ./cosmoshub-snapshot
+	@chmod 0777 ./cosmoshub-snapshot
+	@$(COMPOSE) up cosmoshub-fork -d
+
+stop-cosmoshub-fork:
+	@docker stop cosmoshub-mainnet-fork
+
 build-oracle:
 	@docker buildx build --load --build-context app=https://github.com/skip-mev/slinky.git#v1.0.3 -t skip-mev/slinky-e2e-oracle -f ./Dockerfile.slinky .
 

@@ -5,13 +5,11 @@ IFS=$'\n\t'
 
 SNAPSHOT_INPUT=${SNAPSHOT_INPUT:-"./snapshot.json"}
 GENESIS_OUTPUT=${GENESIS_OUTPUT:-"./genesis.json"}
-MAIN_WALLET=${MAIN_WALLET:-"celestia1yourwalletaddresshere"}
 
 INITIAL_HEIGHT=$(jq -r '.initial_height' "$SNAPSHOT_INPUT")
 ENABLE_HEIGHT=$((INITIAL_HEIGHT + 2))
 
 jq \
-  --arg admin_account "$MAIN_WALLET" \
   --arg enable_height "$ENABLE_HEIGHT" \
   '
     .app_state.bank.denom_metadata |= map(select(.name == "TIA")) |

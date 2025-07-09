@@ -65,6 +65,26 @@ services:
     mem_limit: 60g
     memswap_limit: 156g
 
+  cosmoshub-fork:
+    image: cosmoshub-mainnet-fork
+    container_name: cosmoshub-mainnet-fork
+    volumes:
+      - ./gaia-snapshot/:/opt/gaia/snapshot
+      - ./custom/gaia:/opt/gaia/custom
+    environment:
+      - MAIN_WALLET=cosmos1t2fkjxgjzuk0pzxmarqy8d2kyvemdxf7rcqu4f
+      # it's possible to create valoper with predefine3d mnemonic with VAL_MNEMONIC env var
+      # - VAL_MNEMONIC=""dream dream athlete drastic patch borrow dumb bright state pigeon tape couple wall ship elegant tattoo mind cupboard little feed garment bitter behind faith
+    ports:
+      - 1319:1317
+      - 26661:26657
+      - 26660:26656
+      - 9092:9090
+    networks:
+      - devnet_network
+    mem_limit: 60g
+    memswap_limit: 156g
+
   hermes:
     image: hermes
     entrypoint: ["/bin/bash", "/start_hermes.sh"]
