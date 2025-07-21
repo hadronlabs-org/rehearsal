@@ -74,7 +74,6 @@ max_block_time = "13s"
 client_refresh_rate = "1/3"
 ccv_consumer_chain = false
 sequential_batch_tx = false
-allow_ccq = true
 gas_price = { price = 0.02, denom = 'utia' }
 dynamic_gas_price = { enabled = false, multiplier = 1.1, max = 0.6 }
 default_gas = 1000000
@@ -82,4 +81,28 @@ max_gas = 10000000
 gas_multiplier = 2
 trust_threshold = { numerator = '2', denominator = '3' }
 compat_mode = "0.34"
+key_store_type = "Test"
+
+[[chains]]
+type = "CosmosSdk"
+id = "cosmoshub-4"
+rpc_addr = "http://cosmoshub-mainnet-fork:26657"
+grpc_addr = "http://cosmoshub-mainnet-fork:9090"
+event_source = { mode = "push", url = "ws://cosmoshub-mainnet-fork:26657/websocket", batch_delay = "500ms" }
+rpc_timeout = "10s"
+account_prefix = "cosmos"
+key_name = "cosmoshub-key"
+store_prefix = "ibc"
+max_msg_num = 20
+max_tx_size = 180000
+clock_drift = "4s"
+max_block_time = "3s"
+trusting_period = "14days"
+trust_threshold = { numerator = "1", denominator = "3" }
+key_store_type = "Test"
+default_gas = 5000000
+max_gas = 25000000
+gas_price = { price = 0.01, denom = "uatom" }
+gas_multiplier = 2
+dynamic_gas_price = { enabled = true, multiplier = 1.5, max = 0.05 }
 key_store_type = "Test"

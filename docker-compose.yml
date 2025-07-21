@@ -97,10 +97,12 @@ services:
     depends_on:
       - neutron-fork
       - celestia-fork
+      - cosmoshub-fork
     environment:
       - RUST_LOG=info
       - NEUTRON_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
       - CELESTIA_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
+      - COSMOSHUB_MNEMONIC=child already make apple exact bounce whale model health state camera cinnamon such give board chef indoor ketchup absorb limit country charge convince author
     ports:
       - "3000:3000"
 

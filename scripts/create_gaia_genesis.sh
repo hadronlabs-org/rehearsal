@@ -6,7 +6,7 @@ IFS=$'\n\t'
 SNAPSHOT_INPUT=${SNAPSHOT_INPUT:-"./snapshot.json"}
 GENESIS_OUTPUT=${GENESIS_OUTPUT:-"./genesis.json"}
 
-INITIAL_HEIGHT=$(jq '.initial_height' "$SNAPSHOT_INPUT")
+INITIAL_HEIGHT=$(jq -r '.initial_height' "$SNAPSHOT_INPUT")
 ENABLE_HEIGHT=$((INITIAL_HEIGHT + 2))
 
 jq --arg enable_height "$ENABLE_HEIGHT" '
@@ -54,7 +54,7 @@ jq --arg enable_height "$ENABLE_HEIGHT" '
   | .app_state.ibc.client_genesis.params.allowed_clients = ["09-localhost", "07-tendermint"]
 
   | .app_state.ibc.client_genesis.clients |= map(
-      select(.client_state.chain_id == "cosmoshub-4" or .client_state.chain_id == "neutron-1")
+      select(.client_state.chain_id == "gaia-4" or .client_state.chain_id == "neutron-1")
     )
   | .app_state.ibc.client_genesis.clients as $filtered_clients
   | ($filtered_clients | map(.client_id)) as $valid_client_ids
@@ -98,7 +98,6 @@ jq --arg enable_height "$ENABLE_HEIGHT" '
   | .consensus.validators = []
 
   | .app_state.revenue.validators = []
-  | .app_state.staking.validators = []
   | .app_state.staking.last_validator_powers = []
   | .app_state.staking.last_total_power = "0"
   | .app_state.staking.params.max_validators = 1
@@ -146,30 +145,6 @@ jq --arg enable_height "$ENABLE_HEIGHT" '
       end
     )
 
-  | .app_state.bank.balances |=
-    map(
-      if .address == "cosmos1fl48vsnmsdzcv85q5d2q4z5ajdha8yu34mf0eh" then
-        {address: .address, coins: []}
-      else
-        .
-      end
-    )
-
-  | (.app_state.staking.unbonding_delegations
-      | map(.entries | map(.balance | tonumber) | add)
-      | add
-      | tostring
-    ) as $unbonding_sum
-
-  | .app_state.bank.balances |=
-    map(
-      if .address == "cosmos1tygms3xhhs3yv487phx3dw4a95jn7t7lpm470r" then
-        {address: .address, coins: [{denom: "uatom", amount: $unbonding_sum}]}
-      else
-        .
-      end
-    )
-
   | .app_state.bank.balances |= map({address, coins: (.coins | map(select(.denom == "uatom")))})
   | .app_state.bank.supply =
       (
@@ -178,4 +153,13 @@ jq --arg enable_height "$ENABLE_HEIGHT" '
         | group_by(.denom)
         | map({denom: .[0].denom, amount: (map(.amount) | add | tostring)})
       )
+
+  | .app_state.gov.params.voting_period = "300s"
+  | .app_state.gov.params.quorum = "0.000000000000000001"
+  | .app_state.gov.params.threshold = "0.000000000000000001"
+  | .app_state.gov.params.max_deposit_period = "300s"
+  | .app_state.gov.params.min_deposit[0].amount = "100"
+  | .app_state.gov.params.expedited_voting_period = "60s"
+  | .app_state.gov.params.expedited_threshold = "0.000000000000000002"
+  | .app_state.gov.params.expedited_min_deposit[0].amount = "101"
 ' "$SNAPSHOT_INPUT" > "$GENESIS_OUTPUT"

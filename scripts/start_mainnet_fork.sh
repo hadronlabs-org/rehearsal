@@ -128,7 +128,7 @@ if [ ! -d "/opt/neutron/data_backup" ]; then
 fi
 
 sed -i 's|^log_file = .*|log_file = ""|' /opt/neutron/data/config/config.toml
-sed -i 's/^log_level *= *.*/log_level = "debug"/' /opt/neutron/data/config/config.toml
+sed -i 's/^log_level *= *.*/log_level = "error"/' /opt/neutron/data/config/config.toml
 
 echo "Starting neutron using state backup..."
 cp -r /opt/neutron/data_backup/data/* /opt/neutron/data/data/

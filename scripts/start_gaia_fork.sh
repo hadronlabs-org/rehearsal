@@ -37,15 +37,17 @@ if [ ! -d "/opt/gaia/data_backup" ]; then
         echo "Applying custom configurations..."
         TEMP_GENESIS=$(mktemp genesis_XXXX.json)
         CUSTOM_GENESIS=$(mktemp custom_genesis_XXXX.json)
-        cp /opt/celestia/data/config/genesis.json $TEMP_GENESIS
+        cp /opt/gaia/data/config/genesis.json $TEMP_GENESIS
         /bin/bash $CUSTOM_SCRIPT_PATH $TEMP_GENESIS $CUSTOM_GENESIS
         if jq empty "$CUSTOM_GENESIS"; then
-            cp $CUSTOM_GENESIS /opt/celestia/data/config/genesis.json
+            cp $CUSTOM_GENESIS /opt/gaia/data/config/genesis.json
         else
             echo "Custom genesis is not valid, aborting..."
             exit 1
         fi
     fi
+
+    echo "6..."
 
     crudini --set /opt/gaia/data/config/app.toml api enable true
     crudini --set /opt/gaia/data/config/app.toml api swagger true
