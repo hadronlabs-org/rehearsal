@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "Neutron",
   "license": "Apache-2.0",
-  "description": "Neutron mainet fork integrartion tests",
+  "description": "Neutron mainnet fork integrartion tests",
   "repository": "git@github.com:neutron-org/mainnet-fork-tests.git",
   "scripts": {
     "test": "vitest --run",

@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1
+
+FROM golang:1.23-bullseye
+RUN apt-get update && apt-get install -y jq curl git crudini gzip wget
+RUN git clone --branch rehearsals/no-verify-signature https://github.com/deniszagumennov/gaia-fork.git /opt/gaia
+WORKDIR /opt/gaia
+
+RUN make install
+
+EXPOSE 26656 26657 1317 9090
+RUN gaiad init test --chain-id=cosmoshub-4 --home /opt/gaia/data
+COPY ./config/config.toml /opt/gaia/data/config/config.toml
+COPY --chmod=0755 scripts/create_gaia_genesis.sh /opt/gaia/create_genesis.sh
+COPY --chmod=0755 ./scripts/start_gaia_fork.sh /opt/gaia/start_gaia_fork.sh
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD \
+    curl -f http://127.0.0.1:1317/blocks/1 >/dev/null 2>&1 || exit 1
+
+CMD ["bash", "/opt/gaia/start_gaia_fork.sh"]
